@@ -26,6 +26,10 @@ public class UserService {
 
     public UserDTO registerNewUser(SignupRequest signupRequest) {
         // Check if username already exists
+        if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
+            throw new RuntimeException("Passwords don't match");
+        }
+
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
         }

@@ -15,6 +15,9 @@ public class SignupRequest {
     @Size(min = 4, message = "Password must be at least 4 characters")
     private String password;
 
+    @NotBlank (message = "Confirm Password is required")
+    private String confirmPassword;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
