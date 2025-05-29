@@ -10,6 +10,7 @@ import com.scholarship.scholarship.dto.SignupRequest;
 import com.scholarship.scholarship.dto.UserDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,7 +49,6 @@ public class AuthController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
                 userDetails.getId(),
@@ -67,4 +67,33 @@ public class AuthController {
                     .body(new MessageResponse("Error: " + e.getMessage()));
         }
     }
+
+    @GetMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authHeader) {
+        try {
+            // Extract the token from the Authorization header
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                System.out.println("Validating token: " + token);
+
+                // Validate the token
+                if (jwtUtils.validateJwtToken(token)) {
+                    // Extract username from token
+                    String username = jwtUtils.getUsernameFromJwtToken(token);
+
+                    // Get user details
+                    UserDTO userDTO = userService.findByUsername(username);
+
+                    return ResponseEntity.ok(userDTO);
+                }
+            }
+
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponse("Invalid or expired token"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new MessageResponse("Error validating token: " + e.getMessage()));
+        }
+    }
+
 }
