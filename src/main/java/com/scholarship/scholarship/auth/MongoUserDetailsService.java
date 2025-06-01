@@ -19,6 +19,12 @@ public class MongoUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         return new UserDetailsImpl(user);
     }
+    // Add this method to MongoUserDetailsService.java
+    public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found by email: " + email));
+        return new UserDetailsImpl(user);
+    }
 
     //Google SSO
     public UserDetails loadUserByGoogleId(String googleId) {

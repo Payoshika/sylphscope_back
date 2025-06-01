@@ -14,20 +14,17 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow requests from your frontend origin
+        // Use direct URLs instead of placeholders
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://localhost:8080");
+        config.addAllowedOrigin("https://accounts.google.com");
 
-        // Allow common HTTP methods
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedMethod("OPTIONS");
+        // Allow all methods
+        config.addAllowedMethod("*");
 
         // Allow all headers
         config.addAllowedHeader("*");
 
-        // Allow cookies and auth headers
         config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);

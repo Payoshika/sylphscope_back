@@ -82,4 +82,10 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        return userMapper.toDTO(user);
+    }
+
 }

@@ -78,11 +78,22 @@ public class AuthController {
 
                 // Validate the token
                 if (jwtUtils.validateJwtToken(token)) {
-                    // Extract username from token
-                    String username = jwtUtils.getUsernameFromJwtToken(token);
+                    // Extract username from token (which could be an email for OAuth2 users)
+                    String usernameOrEmail = jwtUtils.getUsernameFromJwtToken(token);
 
-                    // Get user details
-                    UserDTO userDTO = userService.findByUsername(username);
+                    // Try to find user by both username and email
+                    UserDTO userDTO;
+                    try {
+                        // First try by username
+                        userDTO = userService.findByUsername(usernameOrEmail);
+                    } catch (Exception e) {
+                        // If not found by username, try by email
+                        if (usernameOrEmail.contains("@")) {
+                            userDTO = userService.findByEmail(usernameOrEmail);
+                        } else {
+                            throw e; // Re-throw if not an email
+                        }
+                    }
 
                     return ResponseEntity.ok(userDTO);
                 }
@@ -94,6 +105,19 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new MessageResponse("Error validating token: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/oauth2/redirect")
+    public ResponseEntity<?> handleOAuth2Redirect(@RequestParam String token) {
+        // Validate the token
+        System.out.println("Handling OAuth2 redirect with token: " + token);
+        if (jwtUtils.validateJwtToken(token)) {
+            String username = jwtUtils.getUsernameFromJwtToken(token);
+            UserDTO userDTO = userService.findByUsername(username);
+            return ResponseEntity.ok(userDTO);
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new MessageResponse("Invalid token"));
     }
 
 }

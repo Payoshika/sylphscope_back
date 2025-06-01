@@ -1,7 +1,7 @@
 package com.scholarship.scholarship.config;
 
-import com.scholarship.scholarship.auth.JwtAuthenticationFilter;
-import com.scholarship.scholarship.auth.MongoUserDetailsService;
+import com.scholarship.scholarship.auth.*;
+import com.scholarship.scholarship.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,6 +30,20 @@ public class SecurityConfig {
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
+    public OAuth2UserService oAuth2UserService(UserRepository userRepository) {
+        return new OAuth2UserService(userRepository);
+    }
+
+    @Bean
+    public OidcUserService oidcUserService(UserRepository userRepository) {
+        return new CustomOidcUserService(userRepository);
+    }
+
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+
+    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -42,18 +57,34 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/issuer/**").hasRole("ISSUER")
                         .requestMatchers("/api/receiver/**").hasRole("RECEIVER")
                         .requestMatchers("/api/verifier/**").hasRole("VERIFIER")
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        //send the user to the authorization endpoint(e.g., Google, GitHub)
+                        .authorizationEndpoint(authorization -> authorization
+                                .baseUri("/oauth2/authorization"))
+                        //receiving the authorization code from the authorization server
+                        .redirectionEndpoint(redirection -> redirection
+                                .baseUri("/login/oauth2/code/*"))
+                        //saving the user information from the authorization server
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oAuth2UserService(userRepository))
+                                .oidcUserService(oidcUserService(userRepository)))
+                        //handling the success and failure of the OAuth2 login and returning tokens to the client
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureUrl("/login?error=oauth2")
                 );
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
