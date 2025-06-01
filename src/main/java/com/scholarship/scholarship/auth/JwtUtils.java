@@ -78,4 +78,27 @@ public class JwtUtils {
         byte[] keyBytes = jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+    // Add methods for MFA verification
+    public String generateMfaVerifiedToken(String originalToken) {
+        String username = getUsernameFromJwtToken(originalToken);
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("mfa_verified", true)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtProperties.getExpirationMs()))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public boolean isMfaVerified(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("mfa_verified", Boolean.class) != null &&
+                claims.get("mfa_verified", Boolean.class);
+    }
 }

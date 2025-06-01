@@ -39,8 +39,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.info("Authenticating user from JWT: " + username);
                 logger.info("Request URI: " + request.getRequestURI());
                 logger.info("Request Method: " + request.getMethod());
-
                 UserDetails userDetails = null;
+
+                // Check if this endpoint requires MFA
+                if (requiresMfa(request) && !jwtUtils.isMfaVerified(jwt)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.getWriter().write("{\"message\":\"MFA verification required\"}");
+                    return;
+                }
 
                 // For OAuth2 users, check by email first
                 if (username.contains("@")) {
@@ -90,5 +96,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private boolean requiresMfa(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // List paths that require MFA verification
+        return path.startsWith("/api/admin/") ||
+                path.startsWith("/api/issuer/sensitive/") ||
+                path.equals("/api/users/profile/update");
     }
 }

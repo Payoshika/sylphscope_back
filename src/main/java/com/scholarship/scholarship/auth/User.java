@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -35,6 +37,11 @@ public class User {
 
     @NotEmpty(message = "User must have at least one role")
     private List<Role> roles;
+
+    //MFA related fields
+    private boolean mfaEnabled = false;
+    private String mfaSecret; // To store OTP secret or verification code
+    private Date mfaExpiry; // To track when the verification code expires
 
     // Additional fields for SSO
     private String googleId;
