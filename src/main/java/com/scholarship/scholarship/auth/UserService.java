@@ -76,6 +76,12 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserDTO findById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+        return userMapper.toDTO(user);
+    }
+
     public UserDTO findByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));

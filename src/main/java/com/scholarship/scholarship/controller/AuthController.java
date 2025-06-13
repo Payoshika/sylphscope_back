@@ -60,6 +60,7 @@ public class AuthController {
                 jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
+                userDetails.getEmail(),
                 roles));
     }
 
@@ -82,30 +83,19 @@ public class AuthController {
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
                 System.out.println("Validating token: " + token);
-
                 // Validate the token
                 if (jwtUtils.validateJwtToken(token)) {
-                    // Extract username from token (which could be an email for OAuth2 users)
-                    String usernameOrEmail = jwtUtils.getUsernameFromJwtToken(token);
-
-                    // Try to find user by both username and email
-                    UserDTO userDTO;
-                    try {
-                        // First try by username
-                        userDTO = userService.findByUsername(usernameOrEmail);
-                    } catch (Exception e) {
-                        // If not found by username, try by email
-                        if (usernameOrEmail.contains("@")) {
-                            userDTO = userService.findByEmail(usernameOrEmail);
-                        } else {
-                            throw e; // Re-throw if not an email
-                        }
+                    // Extract userid from token
+                    String userId = jwtUtils.getUserIdFromJwtToken(token);
+                    UserDTO userDTO = userService.findById(userId);
+                    //check MFA status
+                    if(userDTO.isMfaEnabled() && !jwtUtils.isMfaVerified(token)) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                .body(new MessageResponse("MFA verification required"));
                     }
-
                     return ResponseEntity.ok(userDTO);
                 }
             }
-
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new MessageResponse("Invalid or expired token"));
         } catch (Exception e) {
@@ -126,18 +116,14 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new MessageResponse("Invalid token"));
     }
-
     @PostMapping("/mfa/request")
     public ResponseEntity<?> requestMfaCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
-
         try {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
             // Generate and send code
             mfaService.generateAndSendVerificationCode(user);
-
             return ResponseEntity.ok(new MessageResponse("Verification code sent"));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -155,12 +141,12 @@ public class AuthController {
             // If verification succeeds, create a new JWT with full permissions
             // or use the existing one and mark it as MFA-verified
             String fullAccessToken = jwtUtils.generateMfaVerifiedToken(token);
-
             UserDTO userDTO = userService.findByEmail(email);
             return ResponseEntity.ok(new JwtResponse(
                     fullAccessToken,
                     userDTO.getId(),
                     userDTO.getUsername(),
+                    userDTO.getEmail(),
                     userDTO.getRoles()
             ));
         } else {

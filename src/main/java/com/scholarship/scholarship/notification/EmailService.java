@@ -1,37 +1,39 @@
 package com.scholarship.scholarship.notification;
 
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import com.postmarkapp.postmark.Postmark;
+import com.postmarkapp.postmark.client.ApiClient;
+import com.postmarkapp.postmark.client.data.model.message.Message;
+import com.postmarkapp.postmark.client.data.model.message.MessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    @Autowired
-    private JavaMailSender mailSender;
-
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${postman_server_token}")
+    private String postmarkToken;
+
     public void sendMfaCode(String toEmail, String code) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromEmail);
-            message.setTo(toEmail);
-            message.setSubject("Your Verification Code");
-            message.setText("Your verification code is: " + code + "\nIt will expire in 10 minutes.");
+            ApiClient client = Postmark.getApiClient(postmarkToken);
+            Message message = new Message(fromEmail, toEmail, "Your Verification Code",
+                    "Your verification code is: " + code + "\nIt will expire in 10 minutes.");
+            message.setMessageStream("broadcast");
+            MessageResponse response = client.deliverMessage(message);
+            logger.info("Email sent to {} with response: {}", toEmail, response);
 
-            mailSender.send(message);
-            logger.info("MFA code sent to: {}", toEmail);
+            if (response.getErrorCode() != 0) {
+                throw new RuntimeException("Failed to send email: " + response.getMessage());
+            }
         } catch (Exception e) {
-            logger.error("Failed to send MFA email", e);
-            throw new RuntimeException("Failed to send MFA email", e);
+            logger.error("Error sending MFA email to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Error sending MFA email", e);
         }
     }
 }

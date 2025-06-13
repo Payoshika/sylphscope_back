@@ -51,7 +51,13 @@ public class MfaService {
             return false; // Code expired
         }
 
-        return user.getMfaSecret().equals(code);
+        boolean isValid = user.getMfaSecret().equals(code);
+        if (isValid) {
+            // Record successful MFA verification
+            user.setLastMfaVerifiedDate(new Date());
+            userRepository.save(user);
+        }
+        return isValid;
     }
 
     private String generateRandomCode() {

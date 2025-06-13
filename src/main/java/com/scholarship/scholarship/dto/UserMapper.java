@@ -13,6 +13,7 @@ public class UserMapper {
         dto.setEmail(user.getEmail());
         dto.setRoles(user.getRoles());
         dto.setEnabled(user.isEnabled());
+        dto.setMfaEnabled(user.isMfaEnabled());
         return dto;
     }
 }

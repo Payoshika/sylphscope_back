@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -23,10 +24,12 @@ public class User {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @Indexed(unique = true)
     private String username;
 
     @NotBlank
     @Email(message = "Email should be valid")
+    @Indexed(unique = true)
     private String email;
 
     @NotBlank(message = "Password is required")
@@ -42,7 +45,7 @@ public class User {
     private boolean mfaEnabled = false;
     private String mfaSecret; // To store OTP secret or verification code
     private Date mfaExpiry; // To track when the verification code expires
-
+    private Date lastMfaVerifiedDate; // To track the last time MFA was verified
     // Additional fields for SSO
     private String googleId;
     private String pictureUrl;

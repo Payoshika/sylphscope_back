@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -35,57 +37,73 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                String userId = jwtUtils.getUserIdFromJwtToken(jwt);
                 String username = jwtUtils.getUsernameFromJwtToken(jwt);
-                logger.info("Authenticating user from JWT: " + username);
-                logger.info("Request URI: " + request.getRequestURI());
-                logger.info("Request Method: " + request.getMethod());
-                UserDetails userDetails = null;
 
-                // Check if this endpoint requires MFA
-                if (requiresMfa(request) && !jwtUtils.isMfaVerified(jwt)) {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                    response.getWriter().write("{\"message\":\"MFA verification required\"}");
+                // Skip MFA check for authentication endpoints
+                if (isAuthEndpoint(request)) {
+                    filterChain.doFilter(request, response);
                     return;
                 }
 
-                // For OAuth2 users, check by email first
-                if (username.contains("@")) {
-                    try {
-                        userDetails = userDetailsService.loadUserByEmail(username);
-                        logger.info("User found by email: " + username);
-                    } catch (UsernameNotFoundException e) {
-                        logger.info("User not found by email: " + username);
+                // Load user details by ID
+                UserDetails userDetails = null;
+                User user = null;
+
+                try {
+                    user = userRepository.findById(userId).orElse(null);
+                    if (user != null) {
+                        userDetails = new UserDetailsImpl(user);
                     }
+                } catch (Exception e) {
+                    logger.warn("Cannot authenticate - user not found by ID: " + userId);
                 }
 
-                // If not found by email, try by username
-                if (userDetails == null) {
-                    try {
-                        userDetails = userDetailsService.loadUserByUsername(username);
-                        logger.info("User found by username: " + username);
-                    } catch (UsernameNotFoundException e) {
-                        logger.warn("Cannot authenticate - user not found: " + username);
+                if (userDetails != null && user != null) {
+                    // Check if MFA is needed
+                    if (needsMfaVerification(user) && !jwtUtils.isMfaVerified(jwt)) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.getWriter().write("{\"message\":\"MFA verification required\",\"requireMfa\":true}");
+                        return;
                     }
-                }
-
-                if (userDetails != null) {
+                    // Process authentication
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(
                                     userDetails,
-                                    null,
+                                    jwt, // Store the JWT as credentials
                                     userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    logger.info("User authenticated successfully: " + username);
-                } else {
-                    logger.error("User not found by username or email: " + username);
                 }
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
         }
-
         filterChain.doFilter(request, response);
+    }
+
+    private boolean needsMfaVerification(User user) {
+        if (!user.isMfaEnabled()) {
+            return false;
+        }
+        Date lastVerified = user.getLastMfaVerifiedDate();
+        // If never verified with MFA, verification is needed
+        if (lastVerified == null) {
+            return true;
+        }
+        // Check if last verification was more than a month ago
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1); // One month ago
+        Date oneMonthAgo = cal.getTime();
+        return lastVerified.before(oneMonthAgo);
+    }
+
+    private boolean isAuthEndpoint(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Exclude auth endpoints from MFA check
+        return path.contains("/api/public/") ||
+                path.contains("/login") ||
+                path.contains("/mfa/");
     }
 
     private String parseJwt(HttpServletRequest request) {
@@ -96,13 +114,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
-    }
-
-    private boolean requiresMfa(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        // List paths that require MFA verification
-        return path.startsWith("/api/admin/") ||
-                path.startsWith("/api/issuer/sensitive/") ||
-                path.equals("/api/users/profile/update");
     }
 }
