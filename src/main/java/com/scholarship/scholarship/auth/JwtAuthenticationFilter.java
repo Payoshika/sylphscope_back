@@ -34,17 +34,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        // Skip check for authentication endpoints
+        if (isAuthEndpoint(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String userId = jwtUtils.getUserIdFromJwtToken(jwt);
-                String username = jwtUtils.getUsernameFromJwtToken(jwt);
-
-                // Skip MFA check for authentication endpoints
-                if (isAuthEndpoint(request)) {
-                    filterChain.doFilter(request, response);
-                    return;
-                }
 
                 // Load user details by ID
                 UserDetails userDetails = null;
@@ -59,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     logger.warn("Cannot authenticate - user not found by ID: " + userId);
                 }
 
-                if (userDetails != null && user != null) {
+                if (userDetails != null) {
                     // Check if MFA is needed
                     if (needsMfaVerification(user) && !jwtUtils.isMfaVerified(jwt)) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -83,14 +81,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean needsMfaVerification(User user) {
-        if (!user.isMfaEnabled()) {
-            return false;
-        }
+        if (!user.isMfaEnabled()) return false;
         Date lastVerified = user.getLastMfaVerifiedDate();
         // If never verified with MFA, verification is needed
-        if (lastVerified == null) {
-            return true;
-        }
+        if (lastVerified == null) return true;
         // Check if last verification was more than a month ago
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -1); // One month ago
@@ -108,11 +102,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
         }
-
         return null;
     }
 }

@@ -4,7 +4,7 @@ public enum Role {
     ADMIN,
     ISSUER,
     RECEIVER,
-    VERIFIER;
+    SUPPORTER;
 
     public String getAuthority() {
         return "ROLE_" + this.name();

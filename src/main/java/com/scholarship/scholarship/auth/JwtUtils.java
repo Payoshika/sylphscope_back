@@ -32,7 +32,7 @@ public class JwtUtils {
             userId = userPrincipal.getId();
             username = userPrincipal.getUsername();
         } else if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
-            // For OAuth2/OIDC users, find by email and use the MongoDB ID
+            // For Google authed OAuth2/OIDC users, find by email
             User user = userRepository.findByEmail(oidcUser.getEmail())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             userId = user.getId();  // Use the actual MongoDB ID
@@ -51,7 +51,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setSubject(userId)
                 .claim("username", username)  // Store username as a claim
-                .claim("mfa_verified", false) // Explicitly mark as not MFA verified
+                .claim("mfa_verified", false) // Explicitly mark as not MFA verified initially, later updated by users
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtProperties.getExpirationMs()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

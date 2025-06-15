@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 import java.util.Collections;
 
 @Service
@@ -25,27 +23,25 @@ public class UserService {
     private UserMapper userMapper;
 
     public UserDTO registerNewUser(SignupRequest signupRequest) {
-        // Check if username already exists
+        // Validate the signup request
         if (!signupRequest.getPassword().equals(signupRequest.getConfirmPassword())) {
             throw new RuntimeException("Passwords don't match");
         }
-
         if (userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
             throw new RuntimeException("Username is already taken");
         }
-
-        // Check if email already exists
         if (userRepository.findByEmail(signupRequest.getEmail()).isPresent()) {
             throw new RuntimeException("Email is already in use");
         }
 
-        // Create new user
-        User user = new User();
-        user.setUsername(signupRequest.getUsername());
-        user.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
-        user.setEmail(signupRequest.getEmail());
-        user.setRoles(Collections.singletonList(Role.RECEIVER)); // Default role
-        user.setEnabled(true);
+        // Create new user using the builder pattern
+        User user = User.builder()
+                .username(signupRequest.getUsername())
+                .password(passwordEncoder.encode(signupRequest.getPassword()))
+                .email(signupRequest.getEmail())
+                .roles(Collections.singletonList(Role.RECEIVER))
+                .enabled(true)
+                .build();
 
         User savedUser = userRepository.save(user);
         return userMapper.toDTO(savedUser);

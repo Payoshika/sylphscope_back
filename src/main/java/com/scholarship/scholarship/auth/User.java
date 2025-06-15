@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@Builder
 @Document(collection = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,6 +38,7 @@ public class User {
     @Size(min = 4, message = "Password must be at least 4 characters")
     private String password;
 
+    //User account status, default is enabled
     private boolean enabled = true;
 
     @NotEmpty(message = "User must have at least one role")
