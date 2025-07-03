@@ -8,10 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +45,9 @@ public class User {
 
     @NotEmpty(message = "User must have at least one role")
     private List<Role> roles;
+
+    @CreatedDate
+    private Instant createdAt;
 
     //MFA related fields
     private boolean mfaEnabled = false;
