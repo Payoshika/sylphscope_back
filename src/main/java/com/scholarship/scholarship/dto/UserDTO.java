@@ -1,5 +1,4 @@
 package com.scholarship.scholarship.dto;
-
 import com.scholarship.scholarship.auth.Role;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
