@@ -1,5 +1,4 @@
 package com.scholarship.scholarship.service;
-
 import com.scholarship.scholarship.dto.StudentDto;
 import com.scholarship.scholarship.enums.Country;
 import com.scholarship.scholarship.model.Student;
@@ -41,10 +40,8 @@ class StudentServiceTest {
             savedStudent.setId("generatedId");
             return savedStudent;
         });
-
         // When
         StudentDto result = studentService.createMinimalStudent(userId);
-
         // Then
         verify(studentRepository).save(studentCaptor.capture());
         Student capturedStudent = studentCaptor.getValue();
