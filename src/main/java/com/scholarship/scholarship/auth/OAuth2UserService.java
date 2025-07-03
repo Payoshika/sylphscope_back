@@ -51,7 +51,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                             newUser.setEmail(email);
                             newUser.setPassword(UUID.randomUUID().toString());
                             newUser.setEnabled(true);
-                            newUser.setRoles(List.of(Role.ISSUER));
+                            newUser.setRoles(List.of(Role.STUDENT));
                             newUser.setGoogleId(providerId);
 
                             System.out.println("Creating new OAuth2 user: " + name);
@@ -65,7 +65,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                             User tempUser = new User();
                             tempUser.setUsername(name != null ? name : email);
                             tempUser.setEmail(email);
-                            tempUser.setRoles(List.of(Role.ISSUER));
+                            tempUser.setRoles(List.of(Role.STUDENT));
                             return tempUser;
                         }
                     });

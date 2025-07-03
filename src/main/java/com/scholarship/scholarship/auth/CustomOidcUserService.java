@@ -47,7 +47,7 @@ public class CustomOidcUserService extends OidcUserService {
                         newUser.setEmail(email);
                         newUser.setPassword(UUID.randomUUID().toString());
                         newUser.setEnabled(true);
-                        newUser.setRoles(List.of(Role.ISSUER));
+                        newUser.setRoles(List.of(Role.STUDENT));
                         newUser.setGoogleId(googleId);
 
                         logger.info("Creating new OIDC user: {}", name);
