@@ -2,10 +2,8 @@ package com.scholarship.scholarship.auth;
 
 public enum Role {
     ADMIN,
-    ISSUER,
-    RECEIVER,
-    SUPPORTER;
-
+    STUDENT,
+    PROVIDER;
     public String getAuthority() {
         return "ROLE_" + this.name();
     }

@@ -66,9 +66,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/issuer/**").hasRole("ISSUER")
-                        .requestMatchers("/api/receiver/**").hasRole("RECEIVER")
-                        .requestMatchers("/api/verifier/**").hasRole("VERIFIER")
+                        .requestMatchers("/api/provider/**").hasRole("PROVIDER")
+                        .requestMatchers("/api/student/**").hasRole("STUDENT")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

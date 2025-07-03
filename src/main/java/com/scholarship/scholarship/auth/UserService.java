@@ -39,7 +39,7 @@ public class UserService {
                 .username(signupRequest.getUsername())
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
-                .roles(Collections.singletonList(Role.RECEIVER))
+                .roles(Collections.singletonList(Role.STUDENT))
                 .enabled(true)
                 .build();
 
