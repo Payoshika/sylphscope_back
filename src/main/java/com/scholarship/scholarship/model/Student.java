@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.model;
 
 import com.scholarship.scholarship.enums.Country;
+import com.scholarship.scholarship.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,9 @@ public class Student {
     private String addressState;
     private String addressCity;
     private String addressElse;
+    private Country[] citizenshipCountry;
+    private String profilePictureUrl;
     private String phoneNumber;
     private String dateOfBirth;
-//    private Gender gender;
+    private Gender gender;
 }

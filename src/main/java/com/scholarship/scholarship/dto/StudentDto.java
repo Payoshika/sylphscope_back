@@ -1,7 +1,7 @@
 package com.scholarship.scholarship.dto;
 
 import com.scholarship.scholarship.enums.Country;
-//import com.scholarship.scholarship.enums.Gender;
+import com.scholarship.scholarship.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,9 @@ public class StudentDto {
     private String addressState;
     private String addressCity;
     private String addressElse;
+    private Country[] citizenshipCountry;
+    private String profilePictureUrl;
     private String phoneNumber;
-//    private Gender gender;
+    private Gender gender;
     private String dateOfBirth;
 }
