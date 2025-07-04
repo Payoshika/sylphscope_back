@@ -1,7 +1,5 @@
 package com.scholarship.scholarship.service;
 
-import com.scholarship.scholarship.dto.PredefinedOptionSetDto;
-import com.scholarship.scholarship.dto.PredefinedQuestionDefinitionDto;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.model.PredefinedOptionSet;
@@ -18,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,8 +36,6 @@ class PredefinedDefinitionServiceTest {
     @InjectMocks
     private PredefinedQuestionDefinitionService questionDefinitionService;
 
-    private PredefinedOptionSetDto optionSetDto;
-    private PredefinedQuestionDefinitionDto questionDefinitionDto;
     private PredefinedOptionSet optionSet;
     private PredefinedQuestionDefinition questionDefinition;
     private List<Option> options;
@@ -49,65 +46,55 @@ class PredefinedDefinitionServiceTest {
 
         // Setup test options
         options = Arrays.asList(
-                new Option("yes", "Yes", "Affirmative response"),
-                new Option("no", "No", "Negative response"),
-                new Option("maybe", "Maybe", "Uncertain response")
+                new Option("yes", "Yes", 1),
+                new Option("no", "No", 2),
+                new Option("maybe", "Maybe", 3)
         );
 
         // Setup option set test data
-        optionSetDto = new PredefinedOptionSetDto();
-        optionSetDto.setKey("yes-no-maybe");
-        optionSetDto.setDefaultQuestionText("Do you agree?");
-        optionSetDto.setDefaultDescription("Select your response");
-        optionSetDto.setOptions(options);
-
         optionSet = new PredefinedOptionSet();
+        optionSet.setKey("yes-no-maybe");
+        optionSet.setDefaultQuestionText("Do you agree?");
+        optionSet.setDefaultDescription("Select your response");
+        optionSet.setOptions(options);
         optionSet.setId("optionSet123");
-        optionSet.setKey(optionSetDto.getKey());
-        optionSet.setDefaultQuestionText(optionSetDto.getDefaultQuestionText());
-        optionSet.setDefaultDescription(optionSetDto.getDefaultDescription());
-        optionSet.setOptions(optionSetDto.getOptions());
         optionSet.setCreatedAt(Instant.now());
 
         // Setup question definition test data
-        questionDefinitionDto = new PredefinedQuestionDefinitionDto();
-        questionDefinitionDto.setKey("agreement-question");
-        questionDefinitionDto.setName("Agreement Question");
-        questionDefinitionDto.setDescription("Question about agreement");
-        questionDefinitionDto.setDefaultInputType(InputType.RADIO);
-        questionDefinitionDto.setValueDataType(DataType.STRING);
-        questionDefinitionDto.setPredefinedOptionSetKey(optionSetDto.getKey());
-
         questionDefinition = new PredefinedQuestionDefinition();
+        questionDefinition.setKey("agreement-question");
+        questionDefinition.setName("Agreement Question");
+        questionDefinition.setDescription("Question about agreement");
+        questionDefinition.setDefaultInputType(InputType.RADIO);
+        questionDefinition.setValueDataType(DataType.STRING);
+        questionDefinition.setPredefinedOptionSetKey(optionSet.getKey());
         questionDefinition.setId("question123");
-        questionDefinition.setKey(questionDefinitionDto.getKey());
-        questionDefinition.setName(questionDefinitionDto.getName());
-        questionDefinition.setDescription(questionDefinitionDto.getDescription());
-        questionDefinition.setDefaultInputType(questionDefinitionDto.getDefaultInputType());
-        questionDefinition.setValueDataType(questionDefinitionDto.getValueDataType());
-        questionDefinition.setPredefinedOptionSetKey(questionDefinitionDto.getPredefinedOptionSetKey());
         questionDefinition.setCreatedAt(Instant.now());
     }
 
     @Test
-    void createOptionSet() {
+    void createQuestionDefinition_Success() {
         // Configure mock to return false for existsByKey check (key doesn't exist yet)
-        when(optionSetRepository.existsByKey(optionSetDto.getKey())).thenReturn(false);
+        when(questionDefinitionRepository.existsByKey(questionDefinition.getKey())).thenReturn(false);
 
         // Configure mock to return our test data when save is called
-        when(optionSetRepository.save(any(PredefinedOptionSet.class))).thenReturn(optionSet);
+        when(questionDefinitionRepository.save(any(PredefinedQuestionDefinition.class))).thenReturn(questionDefinition);
 
         // Call the service method
-        PredefinedOptionSetDto result = optionSetService.createOptionSet(optionSetDto);
+        PredefinedQuestionDefinition result = questionDefinitionService.createQuestionDefinition(questionDefinition);
 
-        // Verify the method was called and the result matches expectations
-        verify(optionSetRepository).save(any(PredefinedOptionSet.class));
+        // Verify the method was called
+        verify(questionDefinitionRepository).save(any(PredefinedQuestionDefinition.class));
 
+        // Assert the result matches expectations
         assertNotNull(result);
-        assertEquals(optionSet.getId(), result.getId());
-        assertEquals(optionSetDto.getKey(), result.getKey());
-        assertEquals(optionSetDto.getDefaultQuestionText(), result.getDefaultQuestionText());
-        assertEquals(optionSetDto.getDefaultDescription(), result.getDefaultDescription());
-        assertEquals(optionSetDto.getOptions().size(), result.getOptions().size());
+        assertEquals(questionDefinition.getId(), result.getId());
+        assertEquals(questionDefinition.getKey(), result.getKey());
+        assertEquals(questionDefinition.getName(), result.getName());
+        assertEquals(questionDefinition.getDescription(), result.getDescription());
+        assertEquals(questionDefinition.getDefaultInputType(), result.getDefaultInputType());
+        assertEquals(questionDefinition.getValueDataType(), result.getValueDataType());
+        assertEquals(questionDefinition.getPredefinedOptionSetKey(), result.getPredefinedOptionSetKey());
     }
+
 }

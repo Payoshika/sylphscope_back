@@ -1,8 +1,10 @@
+// PredefinedOptionSetController.java
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.MessageResponse;
-import com.scholarship.scholarship.dto.PredefinedOptionSetDto;
+import com.scholarship.scholarship.model.PredefinedOptionSet;
 import com.scholarship.scholarship.service.PredefinedOptionSetService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,9 @@ public class PredefinedOptionSetController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createOptionSet(@RequestBody PredefinedOptionSetDto dto) {
+    public ResponseEntity<?> createOptionSet(@Valid @RequestBody PredefinedOptionSet optionSet) {
         try {
-            PredefinedOptionSetDto created = service.createOptionSet(dto);
+            PredefinedOptionSet created = service.createOptionSet(optionSet);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
@@ -44,15 +46,15 @@ public class PredefinedOptionSetController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PredefinedOptionSetDto>> getAllOptionSets() {
+    public ResponseEntity<List<PredefinedOptionSet>> getAllOptionSets() {
         return ResponseEntity.ok(service.getAllOptionSets());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateOptionSet(@PathVariable String id, @RequestBody PredefinedOptionSetDto dto) {
+    public ResponseEntity<?> updateOptionSet(@PathVariable String id, @Valid @RequestBody PredefinedOptionSet optionSet) {
         try {
-            PredefinedOptionSetDto updated = service.updateOptionSet(id, dto);
+            PredefinedOptionSet updated = service.updateOptionSet(id, optionSet);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));

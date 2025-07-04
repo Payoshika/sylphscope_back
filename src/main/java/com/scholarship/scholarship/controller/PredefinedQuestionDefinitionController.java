@@ -1,8 +1,10 @@
+// PredefinedQuestionDefinitionController.java
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.MessageResponse;
-import com.scholarship.scholarship.dto.PredefinedQuestionDefinitionDto;
+import com.scholarship.scholarship.model.PredefinedQuestionDefinition;
 import com.scholarship.scholarship.service.PredefinedQuestionDefinitionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,9 @@ public class PredefinedQuestionDefinitionController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createQuestionDefinition(@RequestBody PredefinedQuestionDefinitionDto dto) {
+    public ResponseEntity<?> createQuestionDefinition(@Valid @RequestBody PredefinedQuestionDefinition questionDefinition) {
         try {
-            PredefinedQuestionDefinitionDto created = service.createQuestionDefinition(dto);
+            PredefinedQuestionDefinition created = service.createQuestionDefinition(questionDefinition);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
@@ -44,22 +46,22 @@ public class PredefinedQuestionDefinitionController {
     }
 
     @GetMapping("/option-set/{optionSetKey}")
-    public ResponseEntity<List<PredefinedQuestionDefinitionDto>> getQuestionDefinitionsByOptionSetKey(
+    public ResponseEntity<List<PredefinedQuestionDefinition>> getQuestionDefinitionsByOptionSetKey(
             @PathVariable String optionSetKey) {
         return ResponseEntity.ok(service.getQuestionDefinitionsByOptionSetKey(optionSetKey));
     }
 
     @GetMapping
-    public ResponseEntity<List<PredefinedQuestionDefinitionDto>> getAllQuestionDefinitions() {
+    public ResponseEntity<List<PredefinedQuestionDefinition>> getAllQuestionDefinitions() {
         return ResponseEntity.ok(service.getAllQuestionDefinitions());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateQuestionDefinition(
-            @PathVariable String id, @RequestBody PredefinedQuestionDefinitionDto dto) {
+            @PathVariable String id, @Valid @RequestBody PredefinedQuestionDefinition questionDefinition) {
         try {
-            PredefinedQuestionDefinitionDto updated = service.updateQuestionDefinition(id, dto);
+            PredefinedQuestionDefinition updated = service.updateQuestionDefinition(id, questionDefinition);
             return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
