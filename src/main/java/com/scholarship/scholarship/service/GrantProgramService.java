@@ -1,45 +1,75 @@
 package com.scholarship.scholarship.service;
 
+import com.scholarship.scholarship.dto.GrantProgramDto;
+import com.scholarship.scholarship.exception.ResourceNotFoundException;
+import com.scholarship.scholarship.modelmapper.GrantProgramMapper;
 import com.scholarship.scholarship.model.GrantProgram;
 import com.scholarship.scholarship.repository.GrantProgramRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GrantProgramService {
 
     private final GrantProgramRepository grantProgramRepository;
+    private final GrantProgramMapper grantProgramMapper;
 
-    @Autowired
-    public GrantProgramService(GrantProgramRepository grantProgramRepository) {
-        this.grantProgramRepository = grantProgramRepository;
+    public List<GrantProgramDto> getAllGrantPrograms() {
+        return grantProgramRepository.findAll().stream()
+                .map(grantProgramMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<GrantProgram> getAllGrantPrograms() {
-        return grantProgramRepository.findAll();
+    public Page<GrantProgramDto> getAllGrantPrograms(Pageable pageable) {
+        Page<GrantProgram> entityPage = grantProgramRepository.findAll(pageable);
+        List<GrantProgramDto> dtos = entityPage.getContent().stream()
+                .map(grantProgramMapper::toDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, entityPage.getTotalElements());
     }
 
-    public Optional<GrantProgram> getGrantProgramById(String id) {
-        return grantProgramRepository.findById(id);
+    public GrantProgramDto getGrantProgramById(String id) {
+        return grantProgramRepository.findById(id)
+                .map(grantProgramMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Grant program not found with id: " + id));
     }
 
-    public List<GrantProgram> getGrantProgramsByProviderId(String providerId) {
-        return grantProgramRepository.findByProviderId(providerId);
+    public List<GrantProgramDto> getGrantProgramsByProviderId(String providerId) {
+        return grantProgramRepository.findByProviderId(providerId).stream()
+                .map(grantProgramMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public GrantProgram createGrantProgram(GrantProgram grantProgram) {
-        return grantProgramRepository.save(grantProgram);
+    public Page<GrantProgramDto> getGrantProgramsByProviderId(String providerId, Pageable pageable) {
+        Page<GrantProgram> entityPage = grantProgramRepository.findByProviderId(providerId, pageable);
+        List<GrantProgramDto> dtos = entityPage.getContent().stream()
+                .map(grantProgramMapper::toDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, entityPage.getTotalElements());
     }
 
-    public Optional<GrantProgram> updateGrantProgram(String id, GrantProgram grantProgram) {
-        if (grantProgramRepository.existsById(id)) {
-            grantProgram.setId(id);
-            return Optional.of(grantProgramRepository.save(grantProgram));
+    public GrantProgramDto createGrantProgram(GrantProgramDto grantProgramDto) {
+        GrantProgram grantProgram = grantProgramMapper.toEntity(grantProgramDto);
+        GrantProgram savedEntity = grantProgramRepository.save(grantProgram);
+        return grantProgramMapper.toDto(savedEntity);
+    }
+
+
+    public GrantProgramDto updateGrantProgram(String id, GrantProgramDto grantProgramDto) {
+        if (!grantProgramRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Grant program not found with id: " + id);
         }
-        return Optional.empty();
+        GrantProgram grantProgram = grantProgramMapper.toEntity(grantProgramDto);
+        grantProgram.setId(id);
+        return grantProgramMapper.toDto(grantProgramRepository.save(grantProgram));
     }
 
     public boolean deleteGrantProgram(String id) {

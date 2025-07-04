@@ -1,59 +1,59 @@
 package com.scholarship.scholarship.controller;
 
+import com.scholarship.scholarship.dto.GrantProgramDto;
 import com.scholarship.scholarship.model.GrantProgram;
 import com.scholarship.scholarship.service.GrantProgramService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/grant-programs")
+@RequiredArgsConstructor
 public class GrantProgramController {
 
     private final GrantProgramService grantProgramService;
 
-    @Autowired
-    public GrantProgramController(GrantProgramService grantProgramService) {
-        this.grantProgramService = grantProgramService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<GrantProgram>> getAllGrantPrograms() {
-        return ResponseEntity.ok(grantProgramService.getAllGrantPrograms());
+    @PostMapping
+    public ResponseEntity<GrantProgramDto> createGrantProgram(@Valid @RequestBody GrantProgramDto grantProgramDto) {
+        GrantProgramDto created = grantProgramService.createGrantProgram(grantProgramDto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GrantProgram> getGrantProgramById(@PathVariable String id) {
-        return grantProgramService.getGrantProgramById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<GrantProgramDto> getGrantProgramById(@PathVariable String id) {
+        GrantProgramDto grantProgram = grantProgramService.getGrantProgramById(id);
+        return ResponseEntity.ok(grantProgram);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<GrantProgramDto>> getAllGrantPrograms(Pageable pageable) {
+        Page<GrantProgramDto> grantPrograms = grantProgramService.getAllGrantPrograms(pageable);
+        return ResponseEntity.ok(grantPrograms);
     }
 
     @GetMapping("/provider/{providerId}")
-    public ResponseEntity<List<GrantProgram>> getGrantProgramsByProviderId(@PathVariable String providerId) {
-        return ResponseEntity.ok(grantProgramService.getGrantProgramsByProviderId(providerId));
-    }
-
-    @PostMapping
-    public ResponseEntity<GrantProgram> createGrantProgram(@Valid @RequestBody GrantProgram grantProgram) {
-        return new ResponseEntity<>(grantProgramService.createGrantProgram(grantProgram), HttpStatus.CREATED);
+    public ResponseEntity<Page<GrantProgramDto>> getGrantProgramsByProviderId(
+            @PathVariable String providerId, Pageable pageable) {
+        Page<GrantProgramDto> grantPrograms = grantProgramService.getGrantProgramsByProviderId(providerId, pageable);
+        return ResponseEntity.ok(grantPrograms);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<GrantProgram> updateGrantProgram(@PathVariable String id, @Valid @RequestBody GrantProgram grantProgram) {
-        return grantProgramService.updateGrantProgram(id, grantProgram)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<GrantProgramDto> updateGrantProgram(
+            @PathVariable String id, @Valid @RequestBody GrantProgramDto grantProgramDto) {
+        grantProgramDto.setId(id); // Ensure ID is set
+        GrantProgramDto updated = grantProgramService.updateGrantProgram(id, grantProgramDto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGrantProgram(@PathVariable String id) {
-        return grantProgramService.deleteGrantProgram(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+        grantProgramService.deleteGrantProgram(id);
+        return ResponseEntity.noContent().build();
     }
 }
