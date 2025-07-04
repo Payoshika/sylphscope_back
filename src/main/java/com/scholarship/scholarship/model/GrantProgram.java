@@ -1,7 +1,12 @@
 package com.scholarship.scholarship.model;
 
 import com.scholarship.scholarship.enums.GrantStatus;
+import com.scholarship.scholarship.enums.MarkingScale;
 import com.scholarship.scholarship.valueObject.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +17,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,19 +28,42 @@ public class GrantProgram {
 
     @Id
     private String id;
+
+    @NotBlank(message = "Provider ID is required")
     private String providerId;
+
+    @NotBlank(message = "Title is required")
+    @Size(max = 200, message = "Title cannot exceed 200 characters")
     private String title;
+
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
+
+    @Valid
     private List<AssignedStaff> assignedStaff;
+
+    @NotNull(message = "Status is required")
     private GrantStatus status;
+
+    @Valid
+    @NotNull(message = "Schedule is required")
     private Schedule schedule;
+
+    @Valid
     private List<Question> questions;
+
+    @Valid
     private List<EligibilityCriterion> eligibilityCriteria;
+
+    @Valid
     private List<SelectionCriterion> selectionCriteria;
+
+    @NotNull(message = "Marking scale is required")
+    private MarkingScale markingScale;
 
     @CreatedDate
     private Instant createdAt;
+
     @LastModifiedDate
     private Instant updatedAt;
-
 }

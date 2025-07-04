@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.valueObject;
 
 import com.scholarship.scholarship.enums.ComparisonCondition;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,8 @@ public class EligibilityCriterion {
     private String criterionId;
     private String questionId;
     private ComparisonCondition condition;
-    private Object value;
-    private List<Object> values;
+    private Object simpleValue;
+    @Valid
+    private List<Option> multipleChoiceValues;
     private String description;
 }

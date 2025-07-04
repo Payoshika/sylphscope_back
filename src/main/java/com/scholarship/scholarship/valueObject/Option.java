@@ -1,4 +1,6 @@
 package com.scholarship.scholarship.valueObject;
+
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Option {
-    private Object value;  // Can be String, Number, Boolean, etc.
-    private String label;
-    private String description;
+    @NotBlank(message = "Option ID is required")
+    private String optionId;
+
+    @NotBlank(message = "Option text is required")
+    private String text;
+
+    private Integer value;
 }
