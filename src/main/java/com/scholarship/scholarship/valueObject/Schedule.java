@@ -1,15 +1,19 @@
 package com.scholarship.scholarship.valueObject;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Option {
-    private Object value;  // Can be String, Number, Boolean, etc.
-    private String label;
-    private String description;
+public class Schedule {
+    private Date applicationStartDate;
+    private Date applicationEndDate;
+    private Date decisionDate;
+    private Date fundDisbursementDate;
 }

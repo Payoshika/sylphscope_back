@@ -1,6 +1,5 @@
 package com.scholarship.scholarship.model;
 
-import com.scholarship.scholarship.valueObject.Option;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,22 +17,27 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "predefined_option_sets")
-public class PredefinedOptionSet {
-
+@Document(collection = "eligibility_results")
+public class EligibilityResult {
     @Id
     private String id;
 
-    @Indexed(unique = true)
-    private String key;
+    @Indexed
+    private String applicationId;
 
-    private String defaultQuestionText;
+    @Indexed
+    private String studentId;
 
-    private String defaultDescription;
+    @Indexed
+    private String grantProgramId;
 
-    private List<Option> options;
+    private boolean isEligible;
+    private boolean overallResult;
 
+    private List<String> passedCriteria;
+    private List<String> failedCriteria;
     @CreatedDate
-    private Instant createdAt;
-
+    private Instant evaluatedAt;
+    @LastModifiedDate
+    private Instant updatedAt;
 }

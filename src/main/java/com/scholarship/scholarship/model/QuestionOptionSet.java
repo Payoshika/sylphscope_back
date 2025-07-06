@@ -1,8 +1,8 @@
 package com.scholarship.scholarship.model;
 
-import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.enums.DataType;
-
+import com.scholarship.scholarship.model.Option;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,30 +14,27 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "predefined_question_definitions")
-public class PredefinedQuestionDefinition {
-
+@Document(collection = "question_option_sets")
+public class QuestionOptionSet {
     @Id
     private String id;
-
     @Indexed(unique = true)
-    private String key;
-
-    private String name;
-
+    @NotBlank(message = "Option set Label is required")
+    private String optionSetLabel;
     private String description;
-
-    private InputType defaultInputType;
-
-    private DataType valueDataType;
-
-    private String predefinedOptionSetKey;
+    @NotBlank(message = "Option data type is required")
+    private DataType optionDataType;
+    private List<Option> options;
 
     @CreatedDate
     private Instant createdAt;
+
+    @LastModifiedDate
+    private Instant updatedAt;
 }
