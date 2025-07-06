@@ -37,6 +37,11 @@ public class Application {
     @NotNull(message = "Status is required")
     private ApplicationStatus status;
 
+    @NotNull(message = "Eligibility Result is required")
+    private EligibilityResult eiligibilityResult;
+
+    private Map<String, StudentAnswer> studentAnswers;
+
     private Instant submittedAt;
 
     @LastModifiedDate
@@ -44,7 +49,4 @@ public class Application {
 
     @Valid
     private List<Answer> answers;
-
-    @Valid
-    private List<AssessmentScore> assessmentScores;
 }

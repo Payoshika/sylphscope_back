@@ -5,8 +5,6 @@ import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.modelmapper.GrantProgramMapper;
 import com.scholarship.scholarship.model.GrantProgram;
 import com.scholarship.scholarship.repository.GrantProgramRepository;
-import com.scholarship.scholarship.valueObject.Question;
-import com.scholarship.scholarship.valueObject.QuestionGroup;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

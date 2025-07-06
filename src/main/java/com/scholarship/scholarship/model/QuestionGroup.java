@@ -1,5 +1,5 @@
 // src/main/java/com/scholarship/scholarship/valueObject/QuestionGroup.java
-package com.scholarship.scholarship.valueObject;
+package com.scholarship.scholarship.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,24 +8,21 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
 
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class QuestionGroup {
-    @NotBlank(message = "Group ID is required")
-    private String groupId;
+    @Id
+    private String id;
 
     @NotBlank(message = "Group name is required")
     private String name;
 
     private String description;
-
-    private String predefinedGroupKey;
-
     @Valid
     private List<String> questionIds;
 

@@ -1,4 +1,4 @@
-package com.scholarship.scholarship.valueObject;
+package com.scholarship.scholarship.model;
 
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
 import java.util.List;
@@ -20,20 +21,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Question {
-    @NotBlank(message = "Question ID is required")
-    private String questionId;
-    private String predefinedKey;
+    @Id
+    private String id;
+    @NotBlank(message = "Question name is required")
+    private String name;
     @NotBlank(message = "Question type is required")
-    private QuestionType type;
+    private QuestionType questionType;
+    @NotBlank(message = "Question input type is required")
+    private InputType inputType;
+    @NotBlank(message = "Question data type is required")
+    private DataType questionDataType;
     @NotNull(message = "Question text is required")
     private String questionText;
     @Size(max = 500, message = "description cannot exceed 500 characters")
     private String description;
-    private InputType inputType;
     private Boolean isRequired;
-    private DataType dataType;
-    @Valid
-    private List<Option> options;
     private Boolean requiresConditionalUpload;
     private String conditionalUploadLabel;
     private Instant createdAt;

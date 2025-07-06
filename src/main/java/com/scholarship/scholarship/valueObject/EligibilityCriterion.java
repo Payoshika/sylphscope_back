@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.valueObject;
 
 import com.scholarship.scholarship.enums.ComparisonCondition;
+import com.scholarship.scholarship.model.Option;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

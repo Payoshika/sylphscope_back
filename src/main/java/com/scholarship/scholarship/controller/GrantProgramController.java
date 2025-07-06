@@ -1,9 +1,7 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.GrantProgramDto;
-import com.scholarship.scholarship.model.GrantProgram;
 import com.scholarship.scholarship.service.GrantProgramService;
-import com.scholarship.scholarship.valueObject.QuestionGroup;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/grant-programs")

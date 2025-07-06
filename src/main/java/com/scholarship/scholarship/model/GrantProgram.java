@@ -50,16 +50,10 @@ public class GrantProgram {
     private Schedule schedule;
 
     @Valid
-    private List<QuestionGroup> questionGroups;
+    private List<String> questionGroupsIds;
 
     @Valid
-    private List<EligibilityCriterion> eligibilityCriteria;
-
-    @Valid
-    private List<SelectionCriterion> selectionCriteria;
-
-    @NotNull(message = "Marking scale is required")
-    private MarkingScale markingScale;
+    private List<String> questions;
 
     @CreatedDate
     private Instant createdAt;

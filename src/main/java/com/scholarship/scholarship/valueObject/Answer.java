@@ -1,8 +1,8 @@
 package com.scholarship.scholarship.valueObject;
 
+import com.scholarship.scholarship.model.Option;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

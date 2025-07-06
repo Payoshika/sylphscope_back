@@ -2,6 +2,7 @@ package com.scholarship.scholarship.dto;
 
 import com.scholarship.scholarship.enums.GrantStatus;
 import com.scholarship.scholarship.enums.MarkingScale;
+import com.scholarship.scholarship.model.Question;
 import com.scholarship.scholarship.valueObject.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
