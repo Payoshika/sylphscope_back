@@ -47,9 +47,6 @@ public class GrantProgramDto {
     private List<Question> questions;
 
     @Valid
-    private List<EligibilityCriterion> eligibilityCriteria;
-
-    @Valid
     private List<SelectionCriterion> selectionCriteria;
 
     @NotNull(message = "Marking scale is required")

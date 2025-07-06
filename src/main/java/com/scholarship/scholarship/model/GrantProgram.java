@@ -53,7 +53,7 @@ public class GrantProgram {
     private List<String> questionGroupsIds;
 
     @Valid
-    private List<String> questions;
+    private List<String> questionIds;
 
     @CreatedDate
     private Instant createdAt;

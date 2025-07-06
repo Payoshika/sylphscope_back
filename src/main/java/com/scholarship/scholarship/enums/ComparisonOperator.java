@@ -3,7 +3,7 @@ package com.scholarship.scholarship.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum ComparisonCondition {
+public enum ComparisonOperator {
     EQUALS("equals"),
     NOT_EQUALS("not_equals"),
     GREATER_THAN("greater_than"),
@@ -19,7 +19,7 @@ public enum ComparisonCondition {
 
     private final String value;
 
-    ComparisonCondition(String value) {
+    ComparisonOperator(String value) {
         this.value = value;
     }
 
@@ -29,8 +29,8 @@ public enum ComparisonCondition {
     }
 
     @JsonCreator
-    public static ComparisonCondition fromValue(String value) {
-        for (ComparisonCondition condition : ComparisonCondition.values()) {
+    public static ComparisonOperator fromValue(String value) {
+        for (ComparisonOperator condition : ComparisonOperator.values()) {
             if (condition.getValue().equalsIgnoreCase(value)) {
                 return condition;
             }
