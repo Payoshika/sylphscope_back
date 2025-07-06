@@ -22,6 +22,7 @@ import java.util.List;
 public class Question {
     @NotBlank(message = "Question ID is required")
     private String questionId;
+    private String predefinedKey;
     @NotBlank(message = "Question type is required")
     private QuestionType type;
     @NotNull(message = "Question text is required")
@@ -30,7 +31,6 @@ public class Question {
     private String description;
     private InputType inputType;
     private Boolean isRequired;
-    private String predefinedKey;
     private DataType dataType;
     @Valid
     private List<Option> options;

@@ -32,6 +32,11 @@ public class PredefinedQuestionDefinition {
     @Indexed(unique = true)
     private String key;
 
+    private String groupId;
+
+    // Order within the group
+    private Integer displayOrder;
+
     @NotBlank(message = "Name is required")
     @Size(max = 50, message = "Name cannot exceed 200 characters")
     private String name;

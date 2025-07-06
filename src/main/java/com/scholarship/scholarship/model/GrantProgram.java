@@ -50,7 +50,7 @@ public class GrantProgram {
     private Schedule schedule;
 
     @Valid
-    private List<Question> questions;
+    private List<QuestionGroup> questionGroups;
 
     @Valid
     private List<EligibilityCriterion> eligibilityCriteria;

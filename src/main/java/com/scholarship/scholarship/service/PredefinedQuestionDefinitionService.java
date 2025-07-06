@@ -2,7 +2,10 @@
 package com.scholarship.scholarship.service;
 
 import com.scholarship.scholarship.model.PredefinedQuestionDefinition;
+import com.scholarship.scholarship.model.PredefinedQuestionGroup;
 import com.scholarship.scholarship.repository.PredefinedQuestionDefinitionRepository;
+import com.scholarship.scholarship.repository.PredefinedQuestionGroupRepository;
+import com.scholarship.scholarship.valueObject.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,9 @@ public class PredefinedQuestionDefinitionService {
 
     @Autowired
     private PredefinedQuestionDefinitionRepository repository;
+
+    @Autowired
+    public PredefinedQuestionGroupRepository predefinedQuestionGroupRepository;
 
     public PredefinedQuestionDefinition createQuestionDefinition(PredefinedQuestionDefinition questionDefinition) {
         if (repository.existsByKey(questionDefinition.getKey())) {
@@ -54,6 +60,35 @@ public class PredefinedQuestionDefinitionService {
         questionDefinition.setId(id);
         questionDefinition.setCreatedAt(entity.getCreatedAt());
         return repository.save(questionDefinition);
+    }
+
+    public List<Question> getQuestionsByGroupId(String groupId) {
+        List<PredefinedQuestionDefinition> definitions = repository.findByGroupId(groupId);
+
+        return definitions.stream()
+                .map(this::convertToQuestion)
+                .collect(Collectors.toList());
+    }
+
+    public List<PredefinedQuestionDefinition> getQuestionDefinitionsByGroupKey(String groupKey) {
+        PredefinedQuestionGroup group = predefinedQuestionGroupRepository.findByKey(groupKey)
+                .orElseThrow(() -> new ResourceNotFoundException("Predefined question group not found"));
+
+        return predefinedQuestionDefinitionRepository.findByGroupId(group.getId());
+    }
+
+    public List<Question> getQuestionsByGroupKey(String groupKey) {
+        // Single query to get the group
+        PredefinedQuestionGroup group = predefinedQuestionGroupRepository.findByKey(groupKey)
+                .orElseThrow(() -> new ResourceNotFoundException("Predefined question group not found"));
+
+        // Single query to get all questions in the group, ordered by display order
+        List<PredefinedQuestionDefinition> definitions =
+                predefinedQuestionDefinitionRepository.findByGroupIdOrderByDisplayOrder(group.getId());
+
+        return definitions.stream()
+                .map(this::convertToQuestion)
+                .collect(Collectors.toList());
     }
 
     public void deleteQuestionDefinition(String id) {

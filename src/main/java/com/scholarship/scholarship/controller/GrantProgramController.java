@@ -3,6 +3,7 @@ package com.scholarship.scholarship.controller;
 import com.scholarship.scholarship.dto.GrantProgramDto;
 import com.scholarship.scholarship.model.GrantProgram;
 import com.scholarship.scholarship.service.GrantProgramService;
+import com.scholarship.scholarship.valueObject.QuestionGroup;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -55,5 +56,14 @@ public class GrantProgramController {
     public ResponseEntity<Void> deleteGrantProgram(@PathVariable String id) {
         grantProgramService.deleteGrantProgram(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{programId}/question-groups/predefined/{groupKey}")
+    @PreAuthorize("hasRole('PROVIDER')")
+    public ResponseEntity<QuestionGroup> addPredefinedQuestionGroup(
+            @PathVariable String programId,
+            @PathVariable String groupKey) {
+        QuestionGroup questionGroup = grantProgramService.addQuestionGroupToProgram(programId, groupKey);
+        return ResponseEntity.ok(questionGroup);
     }
 }

@@ -10,4 +10,6 @@ public interface PredefinedQuestionDefinitionRepository extends MongoRepository<
     Optional<PredefinedQuestionDefinition> findByKey(String key);
     List<PredefinedQuestionDefinition> findByPredefinedOptionSetKey(String predefinedOptionSetKey);
     boolean existsByKey(String key);
+    List<PredefinedQuestionDefinition> findByGroupId(String groupId);
+    List<PredefinedQuestionDefinition> findByGroupIdOrderByDisplayOrder(String groupId);
 }
