@@ -81,32 +81,4 @@ public class GrantProgramService {
         }
         return false;
     }
-
-    public QuestionGroup addQuestionGroupToProgram(String programId, String predefinedGroupKey) {
-        GrantProgram program = grantProgramRepository.findById(programId)
-                .orElseThrow(() -> new ResourceNotFoundException("Grant program not found"));
-
-        PredefinedQuestionGroup predefinedGroup = predefinedQuestionGroupRepository.findByKey(predefinedGroupKey)
-                .orElseThrow(() -> new ResourceNotFoundException("Predefined question group not found"));
-
-        // Get all questions for this group
-        List<Question> questions = predefinedQuestionService.getQuestionsByGroupId(predefinedGroup.getId());
-
-        QuestionGroup questionGroup = QuestionGroup.builder()
-                .groupId(UUID.randomUUID().toString())
-                .name(predefinedGroup.getName())
-                .description(predefinedGroup.getDescription())
-                .questions(questions)
-                .displayOrder(predefinedGroup.getDisplayOrder())
-                .build();
-
-        if (program.getQuestionGroups() == null) {
-            program.setQuestionGroups(new ArrayList<>());
-        }
-
-        program.getQuestionGroups().add(questionGroup);
-        grantProgramRepository.save(program);
-
-        return questionGroup;
-    }
 }

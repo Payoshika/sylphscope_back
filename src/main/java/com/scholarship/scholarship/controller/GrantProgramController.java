@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/grant-programs")
@@ -56,14 +57,5 @@ public class GrantProgramController {
     public ResponseEntity<Void> deleteGrantProgram(@PathVariable String id) {
         grantProgramService.deleteGrantProgram(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{programId}/question-groups/predefined/{groupKey}")
-    @PreAuthorize("hasRole('PROVIDER')")
-    public ResponseEntity<QuestionGroup> addPredefinedQuestionGroup(
-            @PathVariable String programId,
-            @PathVariable String groupKey) {
-        QuestionGroup questionGroup = grantProgramService.addQuestionGroupToProgram(programId, groupKey);
-        return ResponseEntity.ok(questionGroup);
     }
 }
