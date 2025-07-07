@@ -21,19 +21,13 @@ import java.util.List;
 public class EligibilityResult {
     @Id
     private String id;
-
     @Indexed
     private String applicationId;
-
     @Indexed
     private String studentId;
-
     @Indexed
     private String grantProgramId;
-
     private boolean isEligible;
-    private boolean overallResult;
-
     private List<String> passedCriteria;
     private List<String> failedCriteria;
     @CreatedDate

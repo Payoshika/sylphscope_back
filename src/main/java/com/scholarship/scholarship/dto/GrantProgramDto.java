@@ -1,18 +1,12 @@
 package com.scholarship.scholarship.dto;
 
 import com.scholarship.scholarship.enums.GrantStatus;
-import com.scholarship.scholarship.enums.MarkingScale;
-import com.scholarship.scholarship.model.Question;
-import com.scholarship.scholarship.valueObject.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -22,37 +16,15 @@ import java.util.List;
 @AllArgsConstructor
 public class GrantProgramDto {
     private String id;
-
-    @NotBlank(message = "Provider ID is required")
-    private String providerId;
-
-    @NotBlank(message = "Title is required")
-    @Size(max = 200, message = "Title cannot exceed 200 characters")
     private String title;
-
-    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
-
-    @Valid
-    private List<AssignedStaff> assignedStaff;
-
-    @NotNull(message = "Status is required")
+    private String providerId;
     private GrantStatus status;
-
-    @Valid
-    @NotNull(message = "Schedule is required")
-    private Schedule schedule;
-
-    @Valid
-    private List<Question> questions;
-
-    @Valid
-    private List<SelectionCriterion> selectionCriteria;
-
-    @NotNull(message = "Marking scale is required")
-    private MarkingScale markingScale;
-
+    private Instant applicationDeadline;
     private Instant createdAt;
-
     private Instant updatedAt;
+
+    // New fields for eligibility system
+    private List<String> questionIds;
+    private List<String> questionGroupsIds; // Optional - for detailed views
 }

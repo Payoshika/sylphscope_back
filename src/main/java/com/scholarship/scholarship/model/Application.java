@@ -47,7 +47,4 @@ public class Application {
 
     @LastModifiedDate
     private Instant updatedAt;
-
-    @Valid
-    private List<Answer> answers;
 }
