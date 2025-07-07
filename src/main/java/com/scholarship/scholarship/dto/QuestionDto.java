@@ -34,5 +34,9 @@ public class QuestionDto {
     private String description;
     private Boolean requiresConditionalUpload;
     private String conditionalUploadLabel;
+
+    // For questions with options (RADIO, MULTISELECT)
+    private String optionSetId;
+    private QuestionOptionSetDto optionSet;
     private Instant createdAt;
 }

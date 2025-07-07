@@ -32,6 +32,7 @@ public class Question {
     private String questionText;
     @Size(max = 500, message = "description cannot exceed 500 characters")
     private String description;
+    private String optionSetId;
     private Boolean isRequired;
     private Boolean requiresConditionalUpload;
     private String conditionalUploadLabel;

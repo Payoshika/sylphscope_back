@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         //this is for testing creating question
                         .requestMatchers("/api/questions/**").permitAll()
+                        .requestMatchers("/api/option-sets/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")

@@ -27,6 +27,12 @@ public class QuestionService {
         // Validate input type and data type combination
         validateInputTypeAndDataType(questionDto.getInputType(), questionDto.getQuestionDataType());
 
+        // Validate option set for questions that require options
+        if (requiresOptionSet(questionDto.getInputType()) && questionDto.getOptionSetId() == null) {
+            throw new IllegalArgumentException(
+                    questionDto.getInputType() + " input type requires an option set");
+        }
+
         Question question = Question.builder()
                 .name(questionDto.getName())
                 .questionText(questionDto.getQuestionText())
@@ -36,6 +42,7 @@ public class QuestionService {
                 .isRequired(questionDto.isRequired())
                 .requiresConditionalUpload(questionDto.getRequiresConditionalUpload())
                 .conditionalUploadLabel(questionDto.getConditionalUploadLabel())
+                .optionSetId(questionDto.getOptionSetId())
                 .createdAt(Instant.now())
                 .build();
 
@@ -97,8 +104,13 @@ public class QuestionService {
                 .isRequired(question.getIsRequired())
                 .requiresConditionalUpload(question.getRequiresConditionalUpload())
                 .conditionalUploadLabel(question.getConditionalUploadLabel())
+                .optionSetId(question.getOptionSetId())
                 .createdAt(question.getCreatedAt())
                 .build();
+    }
+
+    private boolean requiresOptionSet(InputType inputType) {
+        return inputType == InputType.RADIO || inputType == InputType.MULTISELECT;
     }
 
     private void validateInputTypeAndDataType(InputType inputType, DataType dataType) {
