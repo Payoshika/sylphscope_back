@@ -12,5 +12,4 @@ import java.util.List;
 public interface GrantProgramRepository extends MongoRepository<GrantProgram, String> {
     List<GrantProgram> findByProviderId(String providerId);
     Page<GrantProgram> findByProviderId(String providerId, Pageable pageable);
-
 }
