@@ -23,7 +23,9 @@ public class GrantProgramController {
 
     @PostMapping
     public ResponseEntity<GrantProgramDto> createGrantProgram(@Valid @RequestBody GrantProgramDto grantProgramDto) {
+        System.out.println("Creating Grant Program: " + grantProgramDto);
         GrantProgramDto created = grantProgramService.createGrantProgram(grantProgramDto);
+        System.out.println("Creating Grant Program: " + created);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
