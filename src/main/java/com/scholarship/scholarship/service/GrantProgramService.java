@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,5 +78,33 @@ public class GrantProgramService {
             return true;
         }
         return false;
+    }
+
+    //updating attributes of grant program
+    // GrantProgramService.java
+    public GrantProgramDto addQuestionToGrantProgram(String grantProgramId, String questionId) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        if (grantProgram.getQuestionIds() == null) {
+            grantProgram.setQuestionIds(new ArrayList<>());
+        }
+        if (!grantProgram.getQuestionIds().contains(questionId)) {
+            grantProgram.getQuestionIds().add(questionId);
+            grantProgram = grantProgramRepository.save(grantProgram);
+        }
+        return grantProgramMapper.toDto(grantProgram);
+    }
+
+    public GrantProgramDto addQuestionGroupToGrantProgram(String grantProgramId, String questionGroupId) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        if (grantProgram.getQuestionGroupsIds() == null) {
+            grantProgram.setQuestionGroupsIds(new ArrayList<>());
+        }
+        if (!grantProgram.getQuestionGroupsIds().contains(questionGroupId)) {
+            grantProgram.getQuestionGroupsIds().add(questionGroupId);
+            grantProgram = grantProgramRepository.save(grantProgram);
+        }
+        return grantProgramMapper.toDto(grantProgram);
     }
 }
