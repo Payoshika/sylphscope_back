@@ -1,7 +1,11 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.GrantProgramDto;
+
 import com.scholarship.scholarship.service.GrantProgramService;
+import com.scholarship.scholarship.dto.QuestionIdRequest;
+import com.scholarship.scholarship.dto.QuestionGroupIdRequest;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -54,5 +58,22 @@ public class GrantProgramController {
     public ResponseEntity<Void> deleteGrantProgram(@PathVariable String id) {
         grantProgramService.deleteGrantProgram(id);
         return ResponseEntity.noContent().build();
+    }
+
+    //add question group and question endpoints
+    @PostMapping("/{grantProgramId}/questions")
+    public ResponseEntity<GrantProgramDto> addQuestion(
+            @PathVariable String grantProgramId,
+            @RequestBody QuestionIdRequest request) {
+        GrantProgramDto updated = grantProgramService.addQuestionToGrantProgram(grantProgramId, request.getQuestionId());
+        return ResponseEntity.ok(updated);
+    }
+
+    @PostMapping("/{grantProgramId}/question-groups")
+    public ResponseEntity<GrantProgramDto> addQuestionGroup(
+            @PathVariable String grantProgramId,
+            @RequestBody QuestionGroupIdRequest request) {
+        GrantProgramDto updated = grantProgramService.addQuestionGroupToGrantProgram(grantProgramId, request.getQuestionGroupId());
+        return ResponseEntity.ok(updated);
     }
 }
