@@ -39,10 +39,9 @@ public class UserService {
                 .username(signupRequest.getUsername())
                 .password(passwordEncoder.encode(signupRequest.getPassword()))
                 .email(signupRequest.getEmail())
-                .roles(Collections.singletonList(Role.STUDENT))
+                .roles(Collections.singletonList(signupRequest.getUserRole()))
                 .enabled(true)
                 .build();
-
         User savedUser = userRepository.save(user);
         return userMapper.toDTO(savedUser);
     }
