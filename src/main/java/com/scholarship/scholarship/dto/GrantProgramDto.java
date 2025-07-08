@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.dto;
 
 import com.scholarship.scholarship.enums.GrantStatus;
+import com.scholarship.scholarship.valueObject.Schedule;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class GrantProgramDto {
     private String description;
     private String providerId;
     private GrantStatus status;
-    private Instant applicationDeadline;
+    private Schedule schedule;
     private Instant createdAt;
     private Instant updatedAt;
 
