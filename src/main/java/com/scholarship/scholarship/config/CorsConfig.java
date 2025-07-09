@@ -21,7 +21,6 @@ public class CorsConfig {
 
         // Allow all methods
         config.addAllowedMethod("*");
-        config.addAllowedMethod("PUT"); 
         // Allow all headers
         config.addAllowedHeader("*");
 
