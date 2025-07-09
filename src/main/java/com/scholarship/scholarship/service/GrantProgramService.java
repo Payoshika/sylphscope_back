@@ -1,6 +1,6 @@
 package com.scholarship.scholarship.service;
 
-import com.scholarship.scholarship.dto.GrantProgramDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.modelmapper.GrantProgramMapper;
 import com.scholarship.scholarship.model.GrantProgram;
@@ -58,11 +58,10 @@ public class GrantProgramService {
 
     public GrantProgramDto createGrantProgram(GrantProgramDto grantProgramDto) {
         GrantProgram grantProgram = grantProgramMapper.toEntity(grantProgramDto);
-        System.out.println("grantProgram: " + grantProgram);
         GrantProgram savedEntity = grantProgramRepository.save(grantProgram);
+        System.out.println(savedEntity);
         return grantProgramMapper.toDto(savedEntity);
     }
-
 
     public GrantProgramDto updateGrantProgram(String id, GrantProgramDto grantProgramDto) {
         if (!grantProgramRepository.existsById(id)) {
@@ -107,39 +106,5 @@ public class GrantProgramService {
             grantProgram = grantProgramRepository.save(grantProgram);
         }
         return grantProgramMapper.toDto(grantProgram);
-    }
-
-    // Manual mapping from DTO to Entity
-    private GrantProgram toEntity(GrantProgramDto dto) {
-        if (dto == null) return null;
-        return GrantProgram.builder()
-                .id(dto.getId())
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .providerId(dto.getProviderId())
-                .status(dto.getStatus())
-                .schedule(dto.getSchedule())
-                .createdAt(dto.getCreatedAt())
-                .updatedAt(dto.getUpdatedAt())
-                .questionIds(dto.getQuestionIds())
-                .questionGroupsIds(dto.getQuestionGroupsIds())
-                .build();
-    }
-
-    // Manual mapping from Entity to DTO
-    private GrantProgramDto toDto(GrantProgram entity) {
-        if (entity == null) return null;
-        return GrantProgramDto.builder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .providerId(entity.getProviderId())
-                .status(entity.getStatus())
-                .schedule(entity.getSchedule())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .questionIds(entity.getQuestionIds())
-                .questionGroupsIds(entity.getQuestionGroupsIds())
-                .build();
     }
 }
