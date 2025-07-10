@@ -22,6 +22,11 @@ public class EligibilityCriteriaController {
         this.eligibilityCriteriaService = eligibilityCriteriaService;
     }
 
+    @GetMapping("/by-grant-program/{grantProgramId}")
+    public List<EligibilityCriteriaRequestDto> getCriteriaByGrantProgramId(@PathVariable String grantProgramId) {
+        return eligibilityCriteriaService.getCriteriaByGrantProgramId(grantProgramId);
+    }
+
     @PostMapping("/simple")
     public EligibilityCriteria createSimpleCriteria(@RequestBody EligibilityCriteriaRequestDto dto) {
         return eligibilityCriteriaService.createSimpleCriteria(
@@ -33,6 +38,11 @@ public class EligibilityCriteriaController {
                 dto.getSimpleCondition(),
                 dto.getCriteriaType()
         );
+    }
+
+    @PostMapping("/simple/batch")
+    public List<EligibilityCriteria> createMultipleSimpleCriteria(@RequestBody List<EligibilityCriteriaRequestDto> dtos) {
+        return eligibilityCriteriaService.createMultipleSimpleCriteria(dtos);
     }
 
     @PostMapping("/complex")

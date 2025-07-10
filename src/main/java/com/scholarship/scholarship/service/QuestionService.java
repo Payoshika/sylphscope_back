@@ -1,24 +1,35 @@
 package com.scholarship.scholarship.service;
 
 import com.scholarship.scholarship.dto.QuestionDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+
+import com.scholarship.scholarship.enums.ComparisonOperator;
+import com.scholarship.scholarship.model.Option;
 import com.scholarship.scholarship.model.Question;
+import com.scholarship.scholarship.model.QuestionOptionSet;
+import com.scholarship.scholarship.repository.QuestionOptionSetRepository;
 import com.scholarship.scholarship.repository.QuestionRepository;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
+import com.scholarship.scholarship.util.ComparisonOperatorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    @Autowired
+    private OptionService optionService;
+    @Autowired
+    private QuestionOptionSetRepository questionOptionSetRepository;
 
     public QuestionDto createQuestion(QuestionDto questionDto) {
         log.info("Creating new question: {} with inputType: {} and dataType: {}",
@@ -68,6 +79,9 @@ public class QuestionService {
                 .stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+    public List<Question> getAllQuestionEntities() {
+        return questionRepository.findAll();
     }
 
     public QuestionDto updateQuestion(String id, QuestionDto questionDto) {
@@ -146,5 +160,22 @@ public class QuestionService {
                 }
             }
         }
+    }
+
+    public QuestionEligibilityInfoDto questionForEligibility(Question question) {
+        List<Option> options = Collections.emptyList();
+        if (question.getOptionSetId() != null) {
+            Optional<QuestionOptionSet> optionSetOpt = questionOptionSetRepository.findById(question.getOptionSetId());
+            if (optionSetOpt.isPresent()) {
+                options = optionSetOpt.get().getOptions();
+            }
+        }
+        List<ComparisonOperator> operators = ComparisonOperatorUtils.getOperatorsForInputType(question.getInputType());
+
+        return QuestionEligibilityInfoDto.builder()
+                .question(question)
+                .options(options)
+                .operators(operators)
+                .build();
     }
 }

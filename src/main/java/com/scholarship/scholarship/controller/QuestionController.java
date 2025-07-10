@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+import com.scholarship.scholarship.model.Question;
+import java.util.Objects;
 import java.util.List;
 
 @RestController
@@ -47,5 +49,16 @@ public class QuestionController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable String id) {
         questionService.deleteQuestion(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/questions-for-eligibility")
+    public ResponseEntity<List<QuestionEligibilityInfoDto>> getQuestionsForEligibility() {
+        List<Question> questions = questionService.getAllQuestionEntities().stream()
+                .filter(Objects::nonNull)
+                .toList();
+        List<QuestionEligibilityInfoDto> result = questions.stream()
+                .map(questionService::questionForEligibility)
+                .toList();
+        return ResponseEntity.ok(result);
     }
 }
