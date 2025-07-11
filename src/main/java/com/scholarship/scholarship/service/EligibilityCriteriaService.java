@@ -27,6 +27,41 @@ public class EligibilityCriteriaService {
         this.eligibilityCriteriaMapper = eligibilityCriteriaMapper;
     }
 
+    public List<EligibilityCriteriaRequestDto> updateEligibilityCriteria(List<EligibilityCriteriaRequestDto> dtos, String grantProgramId) {
+//        if (dtos.isEmpty()) return List.of();
+        List<EligibilityCriteria> existingCriteria = eligibilityCriteriaRepository.findAll()
+                .stream()
+                .filter(c -> grantProgramId.equals(c.getGrantProgramId()))
+                .toList();
+
+        List<String> incomingIds = dtos.stream()
+                .map(EligibilityCriteriaRequestDto::getId)
+                .filter(id -> id != null)
+                .toList();
+
+        existingCriteria.stream()
+                .filter(c -> !incomingIds.contains(c.getId()))
+                .forEach(c -> eligibilityCriteriaRepository.deleteById(c.getId()));
+
+        return dtos.stream()
+                .map(dto -> {
+                    EligibilityCriteria existing = dto.getId() != null
+                            ? eligibilityCriteriaRepository.findById(dto.getId()).orElse(null)
+                            : null;
+                    EligibilityCriteria updated = eligibilityCriteriaMapper.toEntity(dto);
+                    if (existing != null) {
+                        updated.setId(existing.getId());
+                    } else {
+                        updated.setId(null);
+                    }
+                    updated.setGrantProgramId(grantProgramId);
+                    EligibilityCriteria saved = eligibilityCriteriaRepository.save(updated);
+                    return eligibilityCriteriaMapper.toDto(saved);
+                })
+                .toList();
+    }
+
+
     public List<EligibilityCriteriaRequestDto> getCriteriaByGrantProgramId(String grantProgramId) {
         return eligibilityCriteriaRepository.findAll()
                 .stream()

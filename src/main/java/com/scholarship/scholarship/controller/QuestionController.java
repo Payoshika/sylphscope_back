@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.QuestionDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionWithOptionsDto;
 import com.scholarship.scholarship.service.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping
-    public ResponseEntity<QuestionDto> createQuestion(@Valid @RequestBody QuestionDto questionDto) {
-        QuestionDto createdQuestion = questionService.createQuestion(questionDto);
+    public ResponseEntity<QuestionDto> createQuestion(@Valid @RequestBody QuestionWithOptionsDto payload) {
+        QuestionDto createdQuestion = questionService.createQuestionWithOptions(payload.getQuestion(), payload.getOptions());
         return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
     }
 

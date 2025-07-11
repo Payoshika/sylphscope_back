@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class EligibilityCriteriaRequestDto {
+    private String id;
     private String grantProgramId;
     private String name;
     private String description;

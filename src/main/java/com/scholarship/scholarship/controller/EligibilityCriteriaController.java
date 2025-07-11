@@ -27,6 +27,13 @@ public class EligibilityCriteriaController {
         return eligibilityCriteriaService.getCriteriaByGrantProgramId(grantProgramId);
     }
 
+    //mostly use this function for updating the criteria
+    @PutMapping("/batch")
+    public List<EligibilityCriteriaRequestDto> updateMultipleCriteria(@RequestBody List<EligibilityCriteriaRequestDto> dtos, @RequestParam String grantProgramId) {
+        return eligibilityCriteriaService.updateEligibilityCriteria(dtos, grantProgramId);
+    }
+
+    // Defined but used in the testing purpose
     @PostMapping("/simple")
     public EligibilityCriteria createSimpleCriteria(@RequestBody EligibilityCriteriaRequestDto dto) {
         return eligibilityCriteriaService.createSimpleCriteria(
@@ -38,11 +45,6 @@ public class EligibilityCriteriaController {
                 dto.getSimpleCondition(),
                 dto.getCriteriaType()
         );
-    }
-
-    @PostMapping("/simple/batch")
-    public List<EligibilityCriteria> createMultipleSimpleCriteria(@RequestBody List<EligibilityCriteriaRequestDto> dtos) {
-        return eligibilityCriteriaService.createMultipleSimpleCriteria(dtos);
     }
 
     @PostMapping("/complex")

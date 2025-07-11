@@ -1,8 +1,9 @@
 package com.scholarship.scholarship.service;
 
+import com.scholarship.scholarship.dto.OptionDto;
 import com.scholarship.scholarship.dto.QuestionDto;
+import com.scholarship.scholarship.dto.QuestionOptionSetDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
-
 import com.scholarship.scholarship.enums.ComparisonOperator;
 import com.scholarship.scholarship.model.Option;
 import com.scholarship.scholarship.model.Question;
@@ -30,18 +31,33 @@ public class QuestionService {
     private OptionService optionService;
     @Autowired
     private QuestionOptionSetRepository questionOptionSetRepository;
+    @Autowired
+    private QuestionOptionSetService questionOptionSetService;
 
-    public QuestionDto createQuestion(QuestionDto questionDto) {
+    public QuestionDto createQuestionWithOptions(QuestionDto questionDto, List<OptionDto> options) {
         log.info("Creating new question: {} with inputType: {} and dataType: {}",
                 questionDto.getName(), questionDto.getInputType(), questionDto.getQuestionDataType());
 
-        // Validate input type and data type combination
         validateInputTypeAndDataType(questionDto.getInputType(), questionDto.getQuestionDataType());
 
-        // Validate option set for questions that require options
-        if (requiresOptionSet(questionDto.getInputType()) && questionDto.getOptionSetId() == null) {
-            throw new IllegalArgumentException(
-                    questionDto.getInputType() + " input type requires an option set");
+        if ((questionDto.getInputType() == InputType.RADIO || questionDto.getInputType() == InputType.MULTISELECT) && options != null && !options.isEmpty()) {
+            // Save each option
+            List<OptionDto> savedOptions = options.stream()
+                    .map(optionService::createOption)
+                    .toList();
+
+            // Create QuestionOptionSet
+            QuestionOptionSetDto optionSetDto = QuestionOptionSetDto.builder()
+                    .optionSetLabel(questionDto.getName() + " Options")
+                    .description("Options for " + questionDto.getName())
+                    .optionDataType(questionDto.getQuestionDataType())
+                    .options(savedOptions)
+                    .build();
+
+            QuestionOptionSetDto savedOptionSet = questionOptionSetService.createQuestionOptionSet(optionSetDto);
+
+            // Set optionSetId in questionDto
+            questionDto.setOptionSetId(savedOptionSet.getId());
         }
 
         Question question = Question.builder()
@@ -178,4 +194,5 @@ public class QuestionService {
                 .operators(operators)
                 .build();
     }
+
 }
