@@ -1,7 +1,6 @@
 package com.scholarship.scholarship.controller;
 
-import com.scholarship.scholarship.dto.GrantProgramDto;
-
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.service.GrantProgramService;
 import com.scholarship.scholarship.dto.QuestionIdRequest;
 import com.scholarship.scholarship.dto.QuestionGroupIdRequest;
@@ -49,7 +48,9 @@ public class GrantProgramController {
     @PutMapping("/{id}")
     public ResponseEntity<GrantProgramDto> updateGrantProgram(
             @PathVariable String id, @Valid @RequestBody GrantProgramDto grantProgramDto) {
-        grantProgramDto.setId(id); // Ensure ID is set
+        System.out.println(id);
+        System.out.println("updating");
+        grantProgramDto.setId(id);
         GrantProgramDto updated = grantProgramService.updateGrantProgram(id, grantProgramDto);
         return ResponseEntity.ok(updated);
     }

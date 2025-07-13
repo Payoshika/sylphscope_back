@@ -1,36 +1,63 @@
 package com.scholarship.scholarship.service;
 
+import com.scholarship.scholarship.dto.OptionDto;
 import com.scholarship.scholarship.dto.QuestionDto;
+import com.scholarship.scholarship.dto.QuestionOptionSetDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
+import com.scholarship.scholarship.enums.ComparisonOperator;
+import com.scholarship.scholarship.model.Option;
 import com.scholarship.scholarship.model.Question;
+import com.scholarship.scholarship.model.QuestionGroup;
+import com.scholarship.scholarship.model.QuestionOptionSet;
+import com.scholarship.scholarship.repository.QuestionOptionSetRepository;
 import com.scholarship.scholarship.repository.QuestionRepository;
+import com.scholarship.scholarship.repository.QuestionGroupRepository;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
+import com.scholarship.scholarship.util.ComparisonOperatorUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    @Autowired
+    private OptionService optionService;
+    @Autowired
+    private QuestionOptionSetRepository questionOptionSetRepository;
+    @Autowired
+    private QuestionGroupRepository questionGroupRepository;
+    @Autowired
+    private QuestionOptionSetService questionOptionSetService;
 
-    public QuestionDto createQuestion(QuestionDto questionDto) {
-        log.info("Creating new question: {} with inputType: {} and dataType: {}",
-                questionDto.getName(), questionDto.getInputType(), questionDto.getQuestionDataType());
-
-        // Validate input type and data type combination
+    public QuestionDto createQuestionWithOptions(QuestionDto questionDto, List<OptionDto> options) {
         validateInputTypeAndDataType(questionDto.getInputType(), questionDto.getQuestionDataType());
+        if ((questionDto.getInputType() == InputType.RADIO || questionDto.getInputType() == InputType.MULTISELECT) && options != null && !options.isEmpty()) {
+            // Save each option
+            List<OptionDto> savedOptions = options.stream()
+                    .map(optionService::createOption)
+                    .toList();
+            // Create QuestionOptionSet
+            QuestionOptionSetDto optionSetDto = QuestionOptionSetDto.builder()
+                    .optionSetLabel(questionDto.getName() + " Options")
+                    .description("Options for " + questionDto.getName())
+                    .optionDataType(DataType.STRING)
+                    .options(savedOptions)
+                    .build();
 
-        // Validate option set for questions that require options
-        if (requiresOptionSet(questionDto.getInputType()) && questionDto.getOptionSetId() == null) {
-            throw new IllegalArgumentException(
-                    questionDto.getInputType() + " input type requires an option set");
+            QuestionOptionSetDto savedOptionSet = questionOptionSetService.createQuestionOptionSet(optionSetDto);
+
+            // Set optionSetId in questionDto
+            questionDto.setOptionSetId(savedOptionSet.getId());
         }
 
         Question question = Question.builder()
@@ -68,6 +95,9 @@ public class QuestionService {
                 .stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+    public List<Question> getAllQuestionEntities() {
+        return questionRepository.findAll();
     }
 
     public QuestionDto updateQuestion(String id, QuestionDto questionDto) {
@@ -136,8 +166,8 @@ public class QuestionService {
                 }
             }
             case RADIO -> {
-                if (dataType != DataType.STRING && dataType != DataType.INTEGER) {
-                    throw new IllegalArgumentException("RADIO input type must use STRING or INTEGER data type");
+                if (dataType != DataType.ARRAY) {
+                    throw new IllegalArgumentException("RADIO input type must use ARRAY data type");
                 }
             }
             case FILE_UPLOAD -> {
@@ -147,4 +177,41 @@ public class QuestionService {
             }
         }
     }
+
+    public QuestionEligibilityInfoDto questionForEligibility(Question question) {
+        List<Option> options = Collections.emptyList();
+        if (question.getOptionSetId() != null) {
+            Optional<QuestionOptionSet> optionSetOpt = questionOptionSetRepository.findById(question.getOptionSetId());
+            if (optionSetOpt.isPresent()) {
+                options = optionSetOpt.get().getOptions();
+            }
+        }
+        List<ComparisonOperator> operators = ComparisonOperatorUtils.getOperatorsForInputType(question.getInputType());
+
+        return QuestionEligibilityInfoDto.builder()
+                .question(question)
+                .options(options)
+                .operators(operators)
+                .build();
+    }
+
+    public List<QuestionGroupEligibilityInfoDto> getQuestionGroupsForEligibility() {
+        List<QuestionGroup> groups = questionGroupRepository.findAll();
+        System.out.println("Question Groups: " + groups.size());
+        return groups.stream().map(group -> {
+            List<QuestionEligibilityInfoDto> questions = group.getQuestionIds().stream()
+                    .map(this::getQuestionById)
+                    .filter(Objects::nonNull)
+                    .map(q -> questionForEligibility(questionRepository.findById(q.getId()).orElse(null)))
+                    .filter(Objects::nonNull)
+                    .toList();
+            QuestionGroupEligibilityInfoDto dto = new QuestionGroupEligibilityInfoDto();
+            dto.setId(group.getId());
+            dto.setName(group.getName());
+            dto.setDescription(group.getDescription());
+            dto.setQuestions(questions);
+            return dto;
+        }).toList();
+    }
+
 }
