@@ -1,7 +1,9 @@
 package com.scholarship.scholarship.dto;
 
+import com.scholarship.scholarship.auth.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -21,4 +23,7 @@ public class SignupRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
+
+    @NotNull(message = "User role is required")
+    private Role userRole;
 }

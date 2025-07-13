@@ -1,4 +1,5 @@
 package com.scholarship.scholarship.valueObject;
+import com.scholarship.scholarship.enums.LogicalOperator;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConditionGroup {
-    private String logicalOperator; // "AND", "OR" for combining conditions within this group
-    private List<String> questionIds;
+    private LogicalOperator logicalOperator;
+    private List<String> questionConditionIds;
 }

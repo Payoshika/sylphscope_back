@@ -1,6 +1,6 @@
 package com.scholarship.scholarship.service;
 
-import com.scholarship.scholarship.dto.GrantProgramDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.modelmapper.GrantProgramMapper;
 import com.scholarship.scholarship.model.GrantProgram;
@@ -59,9 +59,9 @@ public class GrantProgramService {
     public GrantProgramDto createGrantProgram(GrantProgramDto grantProgramDto) {
         GrantProgram grantProgram = grantProgramMapper.toEntity(grantProgramDto);
         GrantProgram savedEntity = grantProgramRepository.save(grantProgram);
+        System.out.println(savedEntity);
         return grantProgramMapper.toDto(savedEntity);
     }
-
 
     public GrantProgramDto updateGrantProgram(String id, GrantProgramDto grantProgramDto) {
         if (!grantProgramRepository.existsById(id)) {

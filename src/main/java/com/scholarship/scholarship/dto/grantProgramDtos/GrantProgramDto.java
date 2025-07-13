@@ -1,4 +1,4 @@
-package com.scholarship.scholarship.dto;
+package com.scholarship.scholarship.dto.grantProgramDtos;
 
 import com.scholarship.scholarship.enums.GrantStatus;
 import com.scholarship.scholarship.valueObject.Schedule;
@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 

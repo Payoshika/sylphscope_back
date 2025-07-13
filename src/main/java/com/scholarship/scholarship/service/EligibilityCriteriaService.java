@@ -1,7 +1,9 @@
 package com.scholarship.scholarship.service;
 
+import com.scholarship.scholarship.dto.EligibilityCriteriaRequestDto;
 import com.scholarship.scholarship.enums.EligibilityCriteriaType;
 import com.scholarship.scholarship.model.EligibilityCriteria;
+import com.scholarship.scholarship.modelmapper.EligibilityCriteriaMapper;
 import com.scholarship.scholarship.repository.EligibilityCriteriaRepository;
 import com.scholarship.scholarship.valueObject.CombinationLogic;
 import com.scholarship.scholarship.valueObject.QuestionCondition;
@@ -14,10 +16,58 @@ import java.util.List;
 public class EligibilityCriteriaService {
 
     private final EligibilityCriteriaRepository eligibilityCriteriaRepository;
+    private final EligibilityCriteriaMapper eligibilityCriteriaMapper;
 
     @Autowired
-    public EligibilityCriteriaService(EligibilityCriteriaRepository eligibilityCriteriaRepository) {
+    public EligibilityCriteriaService(
+            EligibilityCriteriaRepository eligibilityCriteriaRepository,
+            EligibilityCriteriaMapper eligibilityCriteriaMapper
+    ) {
         this.eligibilityCriteriaRepository = eligibilityCriteriaRepository;
+        this.eligibilityCriteriaMapper = eligibilityCriteriaMapper;
+    }
+
+    public List<EligibilityCriteriaRequestDto> updateEligibilityCriteria(List<EligibilityCriteriaRequestDto> dtos, String grantProgramId) {
+//        if (dtos.isEmpty()) return List.of();
+        List<EligibilityCriteria> existingCriteria = eligibilityCriteriaRepository.findAll()
+                .stream()
+                .filter(c -> grantProgramId.equals(c.getGrantProgramId()))
+                .toList();
+
+        List<String> incomingIds = dtos.stream()
+                .map(EligibilityCriteriaRequestDto::getId)
+                .filter(id -> id != null)
+                .toList();
+
+        existingCriteria.stream()
+                .filter(c -> !incomingIds.contains(c.getId()))
+                .forEach(c -> eligibilityCriteriaRepository.deleteById(c.getId()));
+
+        return dtos.stream()
+                .map(dto -> {
+                    EligibilityCriteria existing = dto.getId() != null
+                            ? eligibilityCriteriaRepository.findById(dto.getId()).orElse(null)
+                            : null;
+                    EligibilityCriteria updated = eligibilityCriteriaMapper.toEntity(dto);
+                    if (existing != null) {
+                        updated.setId(existing.getId());
+                    } else {
+                        updated.setId(null);
+                    }
+                    updated.setGrantProgramId(grantProgramId);
+                    EligibilityCriteria saved = eligibilityCriteriaRepository.save(updated);
+                    return eligibilityCriteriaMapper.toDto(saved);
+                })
+                .toList();
+    }
+
+
+    public List<EligibilityCriteriaRequestDto> getCriteriaByGrantProgramId(String grantProgramId) {
+        return eligibilityCriteriaRepository.findAll()
+                .stream()
+                .filter(c -> grantProgramId.equals(c.getGrantProgramId()))
+                .map(eligibilityCriteriaMapper::toDto)
+                .toList();
     }
 
     public EligibilityCriteria createSimpleCriteria(
@@ -42,6 +92,20 @@ public class EligibilityCriteriaService {
                 .simpleCondition(simpleCondition)
                 .build();
         return eligibilityCriteriaRepository.save(criteria);
+    }
+
+    public List<EligibilityCriteria> createMultipleSimpleCriteria(List<EligibilityCriteriaRequestDto> dtos) {
+        return dtos.stream()
+                .map(dto -> createSimpleCriteria(
+                        dto.getGrantProgramId(),
+                        dto.getName(),
+                        dto.getDescription(),
+                        dto.isRequired(),
+                        dto.getQuestionId(),
+                        dto.getSimpleCondition(),
+                        dto.getCriteriaType()
+                ))
+                .toList();
     }
 
     public EligibilityCriteria createComplexCriteria(
