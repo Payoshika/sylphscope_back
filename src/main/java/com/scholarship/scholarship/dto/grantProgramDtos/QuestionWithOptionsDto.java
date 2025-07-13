@@ -3,6 +3,7 @@ package com.scholarship.scholarship.dto.grantProgramDtos;
 import com.scholarship.scholarship.dto.QuestionDto;
 import com.scholarship.scholarship.dto.OptionDto;
 
+import com.scholarship.scholarship.enums.DataType;
 import lombok.Data;
 import lombok.Getter;
 

@@ -22,7 +22,10 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionDto> createQuestion(@Valid @RequestBody QuestionWithOptionsDto payload) {
+        System.out.println("creating question + " + payload.getQuestion());
+        System.out.println("creating options + " + payload.getOptions());
         QuestionDto createdQuestion = questionService.createQuestionWithOptions(payload.getQuestion(), payload.getOptions());
+        System.out.println("created question " + createdQuestion);
         return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
     }
 

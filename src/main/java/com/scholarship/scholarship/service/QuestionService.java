@@ -35,22 +35,17 @@ public class QuestionService {
     private QuestionOptionSetService questionOptionSetService;
 
     public QuestionDto createQuestionWithOptions(QuestionDto questionDto, List<OptionDto> options) {
-        log.info("Creating new question: {} with inputType: {} and dataType: {}",
-                questionDto.getName(), questionDto.getInputType(), questionDto.getQuestionDataType());
-
         validateInputTypeAndDataType(questionDto.getInputType(), questionDto.getQuestionDataType());
-
         if ((questionDto.getInputType() == InputType.RADIO || questionDto.getInputType() == InputType.MULTISELECT) && options != null && !options.isEmpty()) {
             // Save each option
             List<OptionDto> savedOptions = options.stream()
                     .map(optionService::createOption)
                     .toList();
-
             // Create QuestionOptionSet
             QuestionOptionSetDto optionSetDto = QuestionOptionSetDto.builder()
                     .optionSetLabel(questionDto.getName() + " Options")
                     .description("Options for " + questionDto.getName())
-                    .optionDataType(questionDto.getQuestionDataType())
+                    .optionDataType(DataType.STRING)
                     .options(savedOptions)
                     .build();
 
@@ -166,8 +161,8 @@ public class QuestionService {
                 }
             }
             case RADIO -> {
-                if (dataType != DataType.STRING && dataType != DataType.INTEGER) {
-                    throw new IllegalArgumentException("RADIO input type must use STRING or INTEGER data type");
+                if (dataType != DataType.ARRAY) {
+                    throw new IllegalArgumentException("RADIO input type must use ARRAY data type");
                 }
             }
             case FILE_UPLOAD -> {
