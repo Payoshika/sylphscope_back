@@ -4,12 +4,15 @@ import com.scholarship.scholarship.dto.OptionDto;
 import com.scholarship.scholarship.dto.QuestionDto;
 import com.scholarship.scholarship.dto.QuestionOptionSetDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
 import com.scholarship.scholarship.enums.ComparisonOperator;
 import com.scholarship.scholarship.model.Option;
 import com.scholarship.scholarship.model.Question;
+import com.scholarship.scholarship.model.QuestionGroup;
 import com.scholarship.scholarship.model.QuestionOptionSet;
 import com.scholarship.scholarship.repository.QuestionOptionSetRepository;
 import com.scholarship.scholarship.repository.QuestionRepository;
+import com.scholarship.scholarship.repository.QuestionGroupRepository;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
@@ -31,6 +34,8 @@ public class QuestionService {
     private OptionService optionService;
     @Autowired
     private QuestionOptionSetRepository questionOptionSetRepository;
+    @Autowired
+    private QuestionGroupRepository questionGroupRepository;
     @Autowired
     private QuestionOptionSetService questionOptionSetService;
 
@@ -188,6 +193,25 @@ public class QuestionService {
                 .options(options)
                 .operators(operators)
                 .build();
+    }
+
+    public List<QuestionGroupEligibilityInfoDto> getQuestionGroupsForEligibility() {
+        List<QuestionGroup> groups = questionGroupRepository.findAll();
+        System.out.println("Question Groups: " + groups.size());
+        return groups.stream().map(group -> {
+            List<QuestionEligibilityInfoDto> questions = group.getQuestionIds().stream()
+                    .map(this::getQuestionById)
+                    .filter(Objects::nonNull)
+                    .map(q -> questionForEligibility(questionRepository.findById(q.getId()).orElse(null)))
+                    .filter(Objects::nonNull)
+                    .toList();
+            QuestionGroupEligibilityInfoDto dto = new QuestionGroupEligibilityInfoDto();
+            dto.setId(group.getId());
+            dto.setName(group.getName());
+            dto.setDescription(group.getDescription());
+            dto.setQuestions(questions);
+            return dto;
+        }).toList();
     }
 
 }

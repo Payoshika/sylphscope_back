@@ -2,6 +2,8 @@ package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.QuestionDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionWithOptionsDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
+
 import com.scholarship.scholarship.service.QuestionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +24,7 @@ public class QuestionController {
 
     @PostMapping
     public ResponseEntity<QuestionDto> createQuestion(@Valid @RequestBody QuestionWithOptionsDto payload) {
-        System.out.println("creating question + " + payload.getQuestion());
-        System.out.println("creating options + " + payload.getOptions());
         QuestionDto createdQuestion = questionService.createQuestionWithOptions(payload.getQuestion(), payload.getOptions());
-        System.out.println("created question " + createdQuestion);
         return new ResponseEntity<>(createdQuestion, HttpStatus.CREATED);
     }
 
@@ -63,6 +62,13 @@ public class QuestionController {
         List<QuestionEligibilityInfoDto> result = questions.stream()
                 .map(questionService::questionForEligibility)
                 .toList();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/question-groups-for-eligibility")
+    public ResponseEntity<List<QuestionGroupEligibilityInfoDto>> getQuestionGroupsForEligibility() {
+        List<QuestionGroupEligibilityInfoDto> result = questionService.getQuestionGroupsForEligibility();
+        System.out.println(result);
         return ResponseEntity.ok(result);
     }
 }
