@@ -5,6 +5,7 @@ import com.scholarship.scholarship.enums.EligibilityCriteriaType;
 import com.scholarship.scholarship.model.EligibilityCriteria;
 import com.scholarship.scholarship.modelmapper.EligibilityCriteriaMapper;
 import com.scholarship.scholarship.repository.EligibilityCriteriaRepository;
+import com.scholarship.scholarship.repository.GrantProgramRepository;
 import com.scholarship.scholarship.valueObject.CombinationLogic;
 import com.scholarship.scholarship.valueObject.QuestionCondition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,11 @@ import java.util.List;
 @Service
 public class EligibilityCriteriaService {
 
+    @Autowired
+    private GrantProgramRepository grantProgramRepository;
     private final EligibilityCriteriaRepository eligibilityCriteriaRepository;
     private final EligibilityCriteriaMapper eligibilityCriteriaMapper;
+
 
     @Autowired
     public EligibilityCriteriaService(

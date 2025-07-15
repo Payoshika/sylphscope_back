@@ -107,4 +107,14 @@ public class GrantProgramService {
         }
         return grantProgramMapper.toDto(grantProgram);
     }
+
+    // src/main/java/com/scholarship/scholarship/service/GrantProgramService.java
+    public void removeQuestionFromGrantProgram(String grantProgramId, String questionId) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        if (grantProgram.getQuestionIds() != null && grantProgram.getQuestionIds().contains(questionId)) {
+            grantProgram.getQuestionIds().remove(questionId);
+            grantProgramRepository.save(grantProgram);
+        }
+    }
 }
