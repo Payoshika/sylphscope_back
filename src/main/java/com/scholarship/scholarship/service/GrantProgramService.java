@@ -1,4 +1,5 @@
 package com.scholarship.scholarship.service;
+import com.scholarship.scholarship.valueObject.Schedule;
 
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
@@ -78,6 +79,14 @@ public class GrantProgramService {
             return true;
         }
         return false;
+    }
+
+    public GrantProgramDto updateSchedule(String id, Schedule schedule) {
+        GrantProgram grantProgram = grantProgramRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Grant program not found with id: " + id));
+        grantProgram.setSchedule(schedule);
+        GrantProgram saved = grantProgramRepository.save(grantProgram);
+        return grantProgramMapper.toDto(saved);
     }
 
     //updating attributes of grant program
