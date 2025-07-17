@@ -1,5 +1,6 @@
 package com.scholarship.scholarship.model;
 
+import com.scholarship.scholarship.enums.EvaluationScale;
 import com.scholarship.scholarship.enums.GrantStatus;
 import com.scholarship.scholarship.enums.MarkingScale;
 import com.scholarship.scholarship.valueObject.*;
@@ -54,6 +55,11 @@ public class GrantProgram {
 
     @Valid
     private List<String> questionIds;
+
+    @Valid
+    private List<SelectionCriterion> selectionCriteria;
+
+    private EvaluationScale evaluationScale;
 
     @CreatedDate
     private Instant createdAt;

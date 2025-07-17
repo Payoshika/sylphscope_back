@@ -71,6 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/grant-programs/**").permitAll()
                         .requestMatchers("/api/questions/**").permitAll()
                         .requestMatchers("/api/eligibility-criteria/**").permitAll()
+                        .requestMatchers("/api/selection-criteria/**").permitAll()
 
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
