@@ -5,6 +5,7 @@ import com.scholarship.scholarship.service.GrantProgramService;
 import com.scholarship.scholarship.dto.QuestionIdRequest;
 import com.scholarship.scholarship.dto.QuestionGroupIdRequest;
 
+import com.scholarship.scholarship.valueObject.Schedule;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -75,6 +76,14 @@ public class GrantProgramController {
             @PathVariable String grantProgramId,
             @RequestBody QuestionGroupIdRequest request) {
         GrantProgramDto updated = grantProgramService.addQuestionGroupToGrantProgram(grantProgramId, request.getQuestionGroupId());
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{grantProgramId}/schedule")
+    public ResponseEntity<GrantProgramDto> updateSchedule(
+            @PathVariable String grantProgramId,
+            @RequestBody Schedule schedule) {
+        GrantProgramDto updated = grantProgramService.updateSchedule(grantProgramId, schedule);
         return ResponseEntity.ok(updated);
     }
 }
