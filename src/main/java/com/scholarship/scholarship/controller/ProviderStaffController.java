@@ -50,9 +50,12 @@ public class ProviderStaffController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ProviderStaffDto>> getStaffByUserId(@PathVariable String userId) {
+    public ResponseEntity<ProviderStaffDto> getStaffByUserId(@PathVariable String userId) {
         List<ProviderStaffDto> staffList = providerStaffService.getStaffByUserId(userId);
-        return ResponseEntity.ok(staffList);
+        if (staffList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(staffList.get(0));
     }
 
     @GetMapping("/role/{role}")
