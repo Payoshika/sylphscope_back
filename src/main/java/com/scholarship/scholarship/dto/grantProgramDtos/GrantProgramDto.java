@@ -25,11 +25,11 @@ public class GrantProgramDto {
     private Schedule schedule;
     private Instant createdAt;
     private Instant updatedAt;
-
     // New fields for eligibility system
     private List<String> questionIds;
     private List<String> questionGroupsIds; // Optional - for detailed views
     private List<SelectionCriterion> selectionCriteria;
     private EvaluationScale evaluationScale; // New attribute
-
+    private List<Integer> award;
+    private Integer numOfAward;
 }

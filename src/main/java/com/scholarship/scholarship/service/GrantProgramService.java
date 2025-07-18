@@ -69,6 +69,8 @@ public class GrantProgramService {
             throw new ResourceNotFoundException("Grant program not found with id: " + id);
         }
         GrantProgram grantProgram = grantProgramMapper.toEntity(grantProgramDto);
+        System.out.println("this is new grant program");
+        System.out.println(grantProgram);
         grantProgram.setId(id);
         return grantProgramMapper.toDto(grantProgramRepository.save(grantProgram));
     }

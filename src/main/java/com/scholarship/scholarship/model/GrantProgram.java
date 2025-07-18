@@ -61,6 +61,9 @@ public class GrantProgram {
 
     private EvaluationScale evaluationScale;
 
+    private List<Integer> award;
+    private Integer numOfAward;
+
     @CreatedDate
     private Instant createdAt;
 
