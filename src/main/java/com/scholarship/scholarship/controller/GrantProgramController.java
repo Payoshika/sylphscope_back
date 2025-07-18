@@ -54,9 +54,9 @@ public class GrantProgramController {
     }
 
     @GetMapping("/provider/{providerId}")
-    public ResponseEntity<Page<GrantProgramDto>> getGrantProgramsByProviderId(
-            @PathVariable String providerId, Pageable pageable) {
-        Page<GrantProgramDto> grantPrograms = grantProgramService.getGrantProgramsByProviderId(providerId, pageable);
+    public ResponseEntity<List<GrantProgramDto>> getGrantProgramsByProviderId(
+            @PathVariable String providerId) {
+        List<GrantProgramDto> grantPrograms = grantProgramService.getGrantProgramsByProviderId(providerId);
         return ResponseEntity.ok(grantPrograms);
     }
 
@@ -67,6 +67,7 @@ public class GrantProgramController {
         System.out.println("updating");
         grantProgramDto.setId(id);
         GrantProgramDto updated = grantProgramService.updateGrantProgram(id, grantProgramDto);
+        System.out.println(updated);
         return ResponseEntity.ok(updated);
     }
 
