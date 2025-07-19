@@ -1,6 +1,6 @@
 package com.scholarship.scholarship.model;
 
-import com.scholarship.scholarship.enums.DataType;
+import com.scholarship.scholarship.valueObject.Answer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,18 +26,15 @@ public class StudentAnswer {
     private String studentId;
 
     @Indexed
-    private String applicationId;
+    private String[] applicationId;
 
     @Indexed
     private String questionId;
 
-    private Object value; // The actual answer value
-    private String selectedOptionId; // Reference to selected option
-    private DataType valueDataType;
+    @Indexed
+    private String questionGroupId;
 
-    // Metadata for better tracking and evaluation
-    private String questionText;
-    private String optionText; // Text of selected option if applicable
+    private Answer answer;
 
     @CreatedDate
     private Instant answeredAt;

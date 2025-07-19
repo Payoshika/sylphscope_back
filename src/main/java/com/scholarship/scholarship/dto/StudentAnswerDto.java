@@ -1,11 +1,9 @@
 package com.scholarship.scholarship.dto;
-
-import com.scholarship.scholarship.enums.DataType;
+import com.scholarship.scholarship.valueObject.Answer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.Instant;
 
 @Data
@@ -16,10 +14,9 @@ public class StudentAnswerDto {
     private String id;
     private String studentId;
     private String questionId;
-    private String applicationId;
-    private Object value;
-    private String selectedOptionId;
-    private DataType valueDataType;
+    private String[]  applicationId;
+    private String questionGroupId;
+    private Answer answer;
     private Instant answeredAt;
     private Instant updatedAt;
     // Context information

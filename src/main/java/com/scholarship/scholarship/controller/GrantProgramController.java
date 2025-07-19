@@ -2,12 +2,16 @@ package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.QuestionDto;
 import com.scholarship.scholarship.dto.QuestionOptionSetDto;
+import com.scholarship.scholarship.dto.ApplicationDto;
+
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.service.GrantProgramService;
 import com.scholarship.scholarship.service.QuestionOptionSetService;
+import com.scholarship.scholarship.service.ApplicationService;
+
 import com.scholarship.scholarship.service.QuestionService;
 import com.scholarship.scholarship.dto.QuestionIdRequest;
 import com.scholarship.scholarship.dto.QuestionGroupIdRequest;
@@ -16,8 +20,13 @@ import com.scholarship.scholarship.valueObject.Schedule;
 import com.scholarship.scholarship.dto.OptionDto;
 import com.scholarship.scholarship.model.Question;
 import jakarta.validation.Valid;
+
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +42,8 @@ public class GrantProgramController {
     private final GrantProgramService grantProgramService;
     private final QuestionOptionSetService questionOptionSetService;
     private final QuestionService questionService;
+    @Autowired
+    private ApplicationService applicationService;
 
     @PostMapping
     public ResponseEntity<GrantProgramDto> createGrantProgram(@Valid @RequestBody GrantProgramDto grantProgramDto) {
@@ -58,6 +69,27 @@ public class GrantProgramController {
             @PathVariable String providerId) {
         List<GrantProgramDto> grantPrograms = grantProgramService.getGrantProgramsByProviderId(providerId);
         return ResponseEntity.ok(grantPrograms);
+    }
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<Page<GrantProgramDto>> getGrantProgramByStudentId(
+            @PathVariable String studentId,
+            Pageable pageable) {
+        List<GrantProgramDto> allGrantPrograms = grantProgramService.getAllGrantPrograms();
+        List<ApplicationDto> studentApplications = applicationService.getApplicationsByStudentId(studentId);
+        Set<String> appliedGrantProgramIds = studentApplications.stream()
+                .map(ApplicationDto::getGrantProgramId)
+                .collect(Collectors.toSet());
+        List<GrantProgramDto> availableGrantPrograms = allGrantPrograms.stream()
+                .filter(gp -> !appliedGrantProgramIds.contains(gp.getId()))
+                .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), availableGrantPrograms.size());
+        List<GrantProgramDto> pageContent = availableGrantPrograms.subList(start, end);
+
+        Page<GrantProgramDto> page = new PageImpl<>(pageContent, pageable, availableGrantPrograms.size());
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping("/{id}")
