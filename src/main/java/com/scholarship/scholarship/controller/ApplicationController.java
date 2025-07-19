@@ -1,8 +1,11 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.ApplicationDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramApplicationDto;
+
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.service.ApplicationService;
+import com.scholarship.scholarship.service.GrantProgramService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,8 @@ import java.util.List;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
+    @Autowired
+    private GrantProgramService grantProgramService;
 
     @Autowired
     public ApplicationController(ApplicationService applicationService) {
@@ -25,6 +30,18 @@ public class ApplicationController {
     @GetMapping
     public ResponseEntity<List<ApplicationDto>> getAllApplications() {
         return ResponseEntity.ok(applicationService.getAllApplications());
+    }
+
+    @GetMapping("/student/{studentId}/grant-program-applications")
+    public ResponseEntity<List<GrantProgramApplicationDto>> getGrantProgramAndApplicationByStudentId(
+            @PathVariable String studentId) {
+        List<ApplicationDto> applications = applicationService.getApplicationsByStudentId(studentId);
+        List<GrantProgramApplicationDto> result = applications.stream()
+                .map(app -> new GrantProgramApplicationDto(
+                        grantProgramService.getGrantProgramById(app.getGrantProgramId()),
+                        app))
+                .toList();
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
@@ -49,6 +66,14 @@ public class ApplicationController {
     @PostMapping
     public ResponseEntity<ApplicationDto> createApplication(@Valid @RequestBody ApplicationDto applicationDto) {
         return new ResponseEntity<>(applicationService.createApplication(applicationDto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/student/{studentId}/grant-program/{grantProgramId}")
+    public ResponseEntity<ApplicationDto> createApplicationByStudentIdAndGrantProgramId(
+            @PathVariable String studentId,
+            @PathVariable String grantProgramId) {
+        ApplicationDto createdApplication = applicationService.createApplicationByStudentIdAndGrantProgramId(studentId, grantProgramId);
+        return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

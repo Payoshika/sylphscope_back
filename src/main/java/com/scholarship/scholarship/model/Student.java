@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Document(collection = "students")
 @Data
 @NoArgsConstructor
@@ -56,7 +58,7 @@ public class Student {
 
     private String phoneNumber;
 
-    private String dateOfBirth;
+    private Date dateOfBirth;
 
     private Gender gender;
 }

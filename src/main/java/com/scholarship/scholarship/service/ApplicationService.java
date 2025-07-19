@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.service;
 
 import com.scholarship.scholarship.dto.ApplicationDto;
+import com.scholarship.scholarship.enums.ApplicationStatus;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.model.Application;
 import com.scholarship.scholarship.modelmapper.ApplicationMapper;
@@ -49,6 +50,15 @@ public class ApplicationService {
 
     public ApplicationDto createApplication(ApplicationDto applicationDto) {
         Application application = applicationMapper.toEntity(applicationDto);
+        Application savedApplication = applicationRepository.save(application);
+        return applicationMapper.toDto(savedApplication);
+    }
+
+    public ApplicationDto createApplicationByStudentIdAndGrantProgramId(String studentId, String grantProgramId) {
+        Application application = new Application();
+        application.setStudentId(studentId);
+        application.setGrantProgramId(grantProgramId);
+        application.setStatus(ApplicationStatus.DRAFT); // Set status to DRAFT
         Application savedApplication = applicationRepository.save(application);
         return applicationMapper.toDto(savedApplication);
     }

@@ -66,11 +66,6 @@ public List<SelectionCriterion> batchUpdate(String grantProgramId, List<Selectio
             .filter(Objects::nonNull)
             .toList();
 
-    // Remove criteria not present in incoming DTOs
-    System.out.println("incomingIds: " + incomingIds);
-    System.out.println("currentCriteria before removal: " + currentCriteria.stream()
-            .map(SelectionCriterion::getId)
-            .collect(Collectors.toList()));
     List<SelectionCriterion> toDelete = currentCriteria.stream()
             .filter(sc -> sc.getId() != null && !incomingIds.contains(sc.getId()))
             .collect(Collectors.toList());
@@ -80,9 +75,6 @@ public List<SelectionCriterion> batchUpdate(String grantProgramId, List<Selectio
 
     // Remove from currentCriteria
     currentCriteria.removeIf(sc -> sc.getId() != null && !incomingIds.contains(sc.getId()));
-    System.out.println("currentCriteria after removal: " + currentCriteria.stream()
-            .map(SelectionCriterion::getId)
-            .collect(Collectors.toList()));
     for (SelectionCriterionDto dto : dtos) {
         if (dto.getId() == null) {
             // New criterion
@@ -113,6 +105,12 @@ public List<SelectionCriterion> batchUpdate(String grantProgramId, List<Selectio
     }
 
     grantProgram.setSelectionCriteria(currentCriteria);
+    // Set evaluationScale if any criterion has it
+    dtos.stream()
+            .map(SelectionCriterionDto::getEvaluationScale)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .ifPresent(grantProgram::setEvaluationScale);
     grantProgramRepository.save(grantProgram);
     return currentCriteria;
 }

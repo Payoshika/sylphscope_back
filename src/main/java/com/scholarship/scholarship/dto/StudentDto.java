@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,6 +17,7 @@ public class StudentDto {
     private String firstName;
     private String middleName;
     private String lastName;
+    private Date dateOfBirth;
     private Country addressCountry;
     private String addressState;
     private String addressCity;
@@ -23,5 +26,4 @@ public class StudentDto {
     private String profilePictureUrl;
     private String phoneNumber;
     private Gender gender;
-    private String dateOfBirth;
 }

@@ -74,7 +74,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/selection-criteria/**").permitAll()
                         .requestMatchers("/api/providers/**").permitAll()
                         .requestMatchers("/api/provider-staff/**").permitAll()
-
+                        .requestMatchers("/api/students/**").permitAll()
+                        .requestMatchers("/api/applications/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
