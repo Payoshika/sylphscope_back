@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface StudentAnswerRepository extends MongoRepository<StudentAnswer, String> {
     List<StudentAnswer> findByStudentId(String studentId);
-
+    List<StudentAnswer> findByApplicationIdContaining(String applicationId);
     Optional<StudentAnswer> findByStudentIdAndQuestionId(String studentId, String questionId);
 
     List<StudentAnswer> findByQuestionId(String questionId);

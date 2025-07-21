@@ -85,6 +85,12 @@ public class QuestionService {
         return mapToDto(question);
     }
 
+    public QuestionEligibilityInfoDto getQuestionEligibilityInfoById(String id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question not found with id: " + id));
+        return questionForEligibility(question);
+    }
+
     public Optional<QuestionDto> getQuestionByName(String name) {
         return questionRepository.findByName(name)
                 .map(this::mapToDto);
@@ -176,6 +182,12 @@ public class QuestionService {
                 }
             }
         }
+    }
+
+    public List<QuestionEligibilityInfoDto> getQuestionsForEligibility() {
+        return questionRepository.findAll().stream()
+                .map(this::questionForEligibility)
+                .toList();
     }
 
     public QuestionEligibilityInfoDto questionForEligibility(Question question) {

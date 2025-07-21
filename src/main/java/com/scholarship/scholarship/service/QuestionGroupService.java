@@ -1,11 +1,14 @@
 package com.scholarship.scholarship.service;
 
 import com.scholarship.scholarship.dto.QuestionGroupDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
 import com.scholarship.scholarship.model.QuestionGroup;
 import com.scholarship.scholarship.repository.QuestionGroupRepository;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.List;
 public class QuestionGroupService {
 
     private final QuestionGroupRepository questionGroupRepository;
+    @Autowired
+    private QuestionService questionService;
 
     public QuestionGroupDto createQuestionGroup(QuestionGroupDto questionGroupDto) {
         log.info("Creating new question group: {}", questionGroupDto.getName());
@@ -37,6 +42,34 @@ public class QuestionGroupService {
         QuestionGroup questionGroup = questionGroupRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Question group not found with id: " + id));
         return mapToDto(questionGroup);
+    }
+
+    public List<QuestionGroupEligibilityInfoDto> getQuestionGroupsForEligibility() {
+        return questionGroupRepository.findAll().stream().map(group -> {
+            List<QuestionEligibilityInfoDto> questions = group.getQuestionIds().stream()
+                    .map(questionService::getQuestionEligibilityInfoById)
+                    .toList();
+            return QuestionGroupEligibilityInfoDto.builder()
+                    .id(group.getId())
+                    .name(group.getName())
+                    .description(group.getDescription())
+                    .questions(questions)
+                    .build();
+        }).toList();
+    }
+
+    public QuestionGroupEligibilityInfoDto getQuestionGroupEligibilityInfoById(String id) {
+        QuestionGroup group = questionGroupRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Question group not found with id: " + id));
+        List<QuestionEligibilityInfoDto> questions = group.getQuestionIds().stream()
+                .map(questionService::getQuestionEligibilityInfoById)
+                .toList();
+        return QuestionGroupEligibilityInfoDto.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .questions(questions)
+                .build();
     }
 
     public List<QuestionGroupDto> getAllQuestionGroups() {

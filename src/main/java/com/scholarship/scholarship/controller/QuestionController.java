@@ -56,14 +56,7 @@ public class QuestionController {
 
     @GetMapping("/questions-for-eligibility")
     public ResponseEntity<List<QuestionEligibilityInfoDto>> getQuestionsForEligibility() {
-        System.out.println("starting getQuestionsForEligibility");
-        List<Question> questions = questionService.getAllQuestionEntities().stream()
-                .filter(Objects::nonNull)
-                .toList();
-        List<QuestionEligibilityInfoDto> result = questions.stream()
-                .map(questionService::questionForEligibility)
-                .toList();
-        System.out.println(result);
+        List<QuestionEligibilityInfoDto> result = questionService.getQuestionsForEligibility();
         return ResponseEntity.ok(result);
     }
 

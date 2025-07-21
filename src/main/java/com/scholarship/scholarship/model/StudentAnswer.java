@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -26,7 +27,7 @@ public class StudentAnswer {
     private String studentId;
 
     @Indexed
-    private String[] applicationId;
+    private List<String> applicationId;
 
     @Indexed
     private String questionId;
@@ -34,7 +35,7 @@ public class StudentAnswer {
     @Indexed
     private String questionGroupId;
 
-    private Answer answer;
+    private List<Answer> answer;
 
     @CreatedDate
     private Instant answeredAt;

@@ -1,6 +1,7 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.QuestionGroupDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
 import com.scholarship.scholarship.service.QuestionGroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,12 @@ public class QuestionGroupController {
     public ResponseEntity<QuestionGroupDto> getQuestionGroupById(@PathVariable String id) {
         QuestionGroupDto questionGroup = questionGroupService.getQuestionGroupById(id);
         return ResponseEntity.ok(questionGroup);
+    }
+
+    @GetMapping("/groups-for-eligibility")
+    public ResponseEntity<List<QuestionGroupEligibilityInfoDto>> getQuestionGroupsForEligibility() {
+        List<QuestionGroupEligibilityInfoDto> result = questionGroupService.getQuestionGroupsForEligibility();
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping

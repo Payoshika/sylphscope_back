@@ -24,6 +24,10 @@ public class StudentAnswerService {
         return studentAnswerRepository.findByStudentId(studentId);
     }
 
+    public List<StudentAnswer> getAnswersByApplicationId(String applicationId) {
+        return studentAnswerRepository.findByApplicationIdContaining(applicationId);
+    }
+
     public Optional<StudentAnswer> getAnswerById(String id) {
         return studentAnswerRepository.findById(id);
     }
@@ -40,7 +44,7 @@ public class StudentAnswerService {
                             .orElse(new StudentAnswer());
                     // Update fields from incoming entity
                     answer.setStudentId(studentId);
-                    answer.setApplicationId(new String[]{grantProgramId});
+                    answer.setApplicationId(entity.getApplicationId());
                     answer.setQuestionId(entity.getQuestionId());
                     answer.setQuestionGroupId(entity.getQuestionGroupId());
                     answer.setAnswer(entity.getAnswer());
