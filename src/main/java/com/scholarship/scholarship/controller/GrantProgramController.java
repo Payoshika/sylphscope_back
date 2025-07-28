@@ -6,6 +6,8 @@ import com.scholarship.scholarship.dto.ApplicationDto;
 
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramAvailableQuestionsDto;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.service.GrantProgramService;
@@ -33,6 +35,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import com.scholarship.scholarship.dto.ProviderStaffDto;
+import com.scholarship.scholarship.valueObject.AssignedStaff;
 
 @RestController
 @RequestMapping("/api/grant-programs")
@@ -83,7 +87,6 @@ public class GrantProgramController {
         List<GrantProgramDto> availableGrantPrograms = allGrantPrograms.stream()
                 .filter(gp -> !appliedGrantProgramIds.contains(gp.getId()))
                 .collect(Collectors.toList());
-
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), availableGrantPrograms.size());
         List<GrantProgramDto> pageContent = availableGrantPrograms.subList(start, end);
@@ -91,6 +94,7 @@ public class GrantProgramController {
         Page<GrantProgramDto> page = new PageImpl<>(pageContent, pageable, availableGrantPrograms.size());
         return ResponseEntity.ok(page);
     }
+    
 
     @PutMapping("/{id}")
     public ResponseEntity<GrantProgramDto> updateGrantProgram(
@@ -221,4 +225,73 @@ public class GrantProgramController {
 
         return ResponseEntity.ok(result);
     }
+
+    // src/main/java/com/scholarship/scholarship/controller/GrantProgramController.java
+
+// src/main/java/com/scholarship/scholarship/controller/GrantProgramController.java
+
+    @GetMapping("/{grantProgramId}/available-questions")
+    public ResponseEntity<GrantProgramAvailableQuestionsDto> getQuestionsByGrantProgramId(@PathVariable String grantProgramId) {
+        GrantProgramDto grantProgram = grantProgramService.getGrantProgramById(grantProgramId);
+
+        List<String> questionIds = grantProgram.getQuestionIds() != null ? grantProgram.getQuestionIds() : List.of();
+        List<String> questionGroupIds = grantProgram.getQuestionGroupsIds() != null ? grantProgram.getQuestionGroupsIds() : List.of();
+
+        List<QuestionEligibilityInfoDto> questions = questionIds.stream()
+                .map(id -> questionService.getQuestionEligibilityInfoById(id))
+                .toList();
+
+        List<QuestionGroupEligibilityInfoDto> questionGroups = questionGroupIds.stream()
+                .map(id -> questionService.getQuestionGroupsForEligibility().stream()
+                        .filter(g -> g.getId().equals(id))
+                        .findFirst()
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .toList();
+
+        GrantProgramAvailableQuestionsDto result = new GrantProgramAvailableQuestionsDto();
+        result.setQuestions(questions);
+        result.setQuestionGroups(questionGroups);
+
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{grantProgramId}/contact-person")
+    public ResponseEntity<GrantProgramDto> updateContactPerson(@PathVariable String grantProgramId, @RequestBody ProviderStaffDto providerStaffDto) {
+        GrantProgramDto updated = grantProgramService.updateContactPerson(grantProgramId, providerStaffDto);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{grantProgramId}/assigned-staff")
+    public ResponseEntity<GrantProgramDto> updateAssignedStaff(@PathVariable String grantProgramId, @RequestBody List<AssignedStaff> assignedStaffList) {
+        GrantProgramDto updated = grantProgramService.updateAssignedStaff(grantProgramId, assignedStaffList);
+        return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/{grantProgramId}/assigned-staff")
+    public ResponseEntity<List<AssignedStaff>> getAssignedStaff(@PathVariable String grantProgramId) {
+        System.out.println("getting assigned staff for " + grantProgramId);
+        List<AssignedStaff> staffList = grantProgramService.getAssignedStaff(grantProgramId);
+        System.out.println("staff list: " + staffList);
+        return ResponseEntity.ok(staffList);
+    }
+
+    @GetMapping("/{grantProgramId}/contact-person")
+    public ResponseEntity<ProviderStaffDto> getContactPerson(@PathVariable String grantProgramId) {
+        ProviderStaffDto contactPerson = grantProgramService.getContactPerson(grantProgramId);
+        return ResponseEntity.ok(contactPerson);
+    }
+
+    @GetMapping("/student/{studentId}/applied")
+    public ResponseEntity<List<GrantProgramDto>> getAppliedGrantProgram(@PathVariable String studentId) {
+        List<ApplicationDto> studentApplications = applicationService.getApplicationsByStudentId(studentId);
+        Set<String> appliedGrantProgramIds = studentApplications.stream()
+                .map(ApplicationDto::getGrantProgramId)
+                .collect(Collectors.toSet());
+        List<GrantProgramDto> appliedGrantPrograms = grantProgramService.getAllGrantPrograms().stream()
+                .filter(gp -> appliedGrantProgramIds.contains(gp.getId()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(appliedGrantPrograms);
+    }
 }
+

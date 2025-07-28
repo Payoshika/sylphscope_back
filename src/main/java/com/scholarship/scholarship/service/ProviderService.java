@@ -1,8 +1,11 @@
 package com.scholarship.scholarship.service;
 
 import com.scholarship.scholarship.dto.ProviderDto;
+import com.scholarship.scholarship.dto.ProviderStaffDto;
 import com.scholarship.scholarship.model.Provider;
+import com.scholarship.scholarship.model.ProviderStaff;
 import com.scholarship.scholarship.repository.ProviderRepository;
+import com.scholarship.scholarship.repository.ProviderStaffRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,9 @@ public class ProviderService {
 
     @Autowired
     private ProviderRepository providerRepository;
+
+    @Autowired
+    private ProviderStaffRepository providerStaffRepository;
 
     public ProviderDto createProvider(ProviderDto providerDto) {
         Provider provider = new Provider();
@@ -67,5 +73,29 @@ public class ProviderService {
 
     public void deleteProvider(String id) {
         providerRepository.deleteById(id);
+    }
+
+    public ProviderDto assignContactPerson(String providerId, ProviderStaffDto providerStaffDto) {
+        Optional<Provider> providerOpt = providerRepository.findById(providerId);
+        if (providerOpt.isPresent()) {
+            Provider provider = providerOpt.get();
+            ProviderStaff contactPerson = new ProviderStaff();
+            org.springframework.beans.BeanUtils.copyProperties(providerStaffDto, contactPerson);
+            provider.setContactPerson(contactPerson);
+            Provider updatedProvider = providerRepository.save(provider);
+            ProviderDto providerDto = new ProviderDto();
+            org.springframework.beans.BeanUtils.copyProperties(updatedProvider, providerDto);
+            return providerDto;
+        }
+        return null;
+    }
+
+    public List<ProviderStaffDto> getStaff(String providerId) {
+        List<ProviderStaff> staffList = providerStaffRepository.findByProviderId(providerId);
+        return staffList.stream().map(staff -> {
+            ProviderStaffDto dto = new ProviderStaffDto();
+            org.springframework.beans.BeanUtils.copyProperties(staff, dto);
+            return dto;
+        }).collect(java.util.stream.Collectors.toList());
     }
 }

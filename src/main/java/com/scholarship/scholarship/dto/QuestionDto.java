@@ -4,10 +4,7 @@ import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 
@@ -15,6 +12,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class QuestionDto {
     private String id;
 

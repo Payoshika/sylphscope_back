@@ -1,17 +1,24 @@
 package com.scholarship.scholarship.controller;
+import com.scholarship.scholarship.dto.ApplicationDto;
+import com.scholarship.scholarship.dto.ProviderDto;
 import com.scholarship.scholarship.enums.StaffRole;
 
 import com.scholarship.scholarship.dto.ProviderStaffDto;
 import com.scholarship.scholarship.model.ProviderStaff;
 import com.scholarship.scholarship.service.ProviderStaffService;
+import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
+import com.scholarship.scholarship.dto.StudentDto;
+import com.scholarship.scholarship.service.GrantProgramService;
+import com.scholarship.scholarship.service.ApplicationService;
+import com.scholarship.scholarship.service.StudentService;
+import com.scholarship.scholarship.service.ProviderService;
+import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -20,6 +27,14 @@ public class ProviderStaffController {
 
     @Autowired
     private ProviderStaffService providerStaffService;
+    @Autowired
+    private GrantProgramService grantProgramService;
+    @Autowired
+    private ApplicationService applicationService;
+    @Autowired
+    private StudentService studentService;
+    @Autowired
+    private ProviderService providerService;
 
     @PostMapping
     public ResponseEntity<ProviderStaffDto> createProviderStaff(@RequestBody ProviderStaffDto providerStaffDto) {

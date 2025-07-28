@@ -43,6 +43,8 @@ public class GrantProgram {
     @Valid
     private List<AssignedStaff> assignedStaff;
 
+    private ProviderStaff contactPerson;
+
     @NotNull(message = "Status is required")
     private GrantStatus status;
 

@@ -14,6 +14,7 @@ public class ProviderDto {
     private String organisationName;
     private String contactEmail;
     private String contactPhone;
+    private ProviderStaffDto contactPerson;
     private String websiteUrl;
     private String organisationDescription;
     private String logoUrl;
