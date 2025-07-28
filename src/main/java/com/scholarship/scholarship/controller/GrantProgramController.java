@@ -8,6 +8,7 @@ import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionEligibilityInfoDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibilityInfoDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramAvailableQuestionsDto;
+import com.scholarship.scholarship.dto.grantProgramDtos.CreateGrantProgramRequestDto;
 import com.scholarship.scholarship.enums.DataType;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.service.GrantProgramService;
@@ -50,7 +51,26 @@ public class GrantProgramController {
     private ApplicationService applicationService;
 
     @PostMapping
-    public ResponseEntity<GrantProgramDto> createGrantProgram(@Valid @RequestBody GrantProgramDto grantProgramDto) {
+    public ResponseEntity<GrantProgramDto> createGrantProgram(@RequestBody CreateGrantProgramRequestDto request) {
+        String providerStaffId = request.getProviderStaffId();
+        GrantProgramDto grantProgramDto = request.getGrantProgramDto();
+        // Get ProviderStaff from id
+        ProviderStaffDto providerStaffDto = grantProgramService.getProviderStaffById(providerStaffId);
+        if (providerStaffDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        // Assign ProviderStaff as contactPerson
+        grantProgramDto.setContactPerson(providerStaffDto.toProviderStaff());
+        // Create AssignedStaff object with MANAGER role
+        AssignedStaff assignedStaff = AssignedStaff.builder()
+                .staffId(providerStaffDto.getId())
+                .roleOnProgram(com.scholarship.scholarship.enums.StaffRole.MANAGER)
+                .assignedAt(new Date())
+                .build();
+        System.out.println("assigned staff: " + assignedStaff);
+        List<AssignedStaff> assignedStaffList = new ArrayList<>();
+        assignedStaffList.add(assignedStaff);
+        grantProgramDto.setAssignedStaff(assignedStaffList);
         GrantProgramDto created = grantProgramService.createGrantProgram(grantProgramDto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }

@@ -19,4 +19,10 @@ public class ProviderStaffDto {
     private String firstName;
     private String middleName;
     private String lastName;
+
+    public com.scholarship.scholarship.model.ProviderStaff toProviderStaff() {
+        com.scholarship.scholarship.model.ProviderStaff staff = new com.scholarship.scholarship.model.ProviderStaff();
+        org.springframework.beans.BeanUtils.copyProperties(this, staff);
+        return staff;
+    }
 }

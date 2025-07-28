@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import com.scholarship.scholarship.dto.ProviderStaffDto;
 import com.scholarship.scholarship.model.ProviderStaff;
+import com.scholarship.scholarship.repository.ProviderStaffRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class GrantProgramService {
 
     private final GrantProgramRepository grantProgramRepository;
     private final GrantProgramMapper grantProgramMapper;
+    private final ProviderStaffRepository providerStaffRepository;
 
     public List<GrantProgramDto> getAllGrantPrograms() {
         return grantProgramRepository.findAll().stream()
@@ -162,6 +164,14 @@ public class GrantProgramService {
         if (grantProgram.getContactPerson() != null) {
             org.springframework.beans.BeanUtils.copyProperties(grantProgram.getContactPerson(), dto);
         }
+        return dto;
+    }
+
+    public ProviderStaffDto getProviderStaffById(String providerStaffId) {
+        com.scholarship.scholarship.model.ProviderStaff staff = providerStaffRepository.findById(providerStaffId)
+            .orElseThrow(() -> new ResourceNotFoundException("Provider staff not found with id: " + providerStaffId));
+        ProviderStaffDto dto = new ProviderStaffDto();
+        org.springframework.beans.BeanUtils.copyProperties(staff, dto);
         return dto;
     }
 }
