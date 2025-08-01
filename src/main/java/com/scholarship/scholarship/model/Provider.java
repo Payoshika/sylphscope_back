@@ -33,6 +33,9 @@ public class Provider {
             message = "Phone number must be in a valid format")
     private String contactPhone;
 
+    @NotBlank(message = "Contact person is required")
+    private ProviderStaff contactPerson;
+
     @Pattern(regexp = "^(https?:\\/\\/)?([\\w\\-])+\\.([\\w\\-\\.]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?$",
             message = "Website URL must be in a valid format")
     private String websiteUrl;

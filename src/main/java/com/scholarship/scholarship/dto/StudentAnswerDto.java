@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,11 +15,9 @@ public class StudentAnswerDto {
     private String id;
     private String studentId;
     private String questionId;
-    private String[]  applicationId;
+    private List<String> applicationId;
     private String questionGroupId;
-    private Answer answer;
-    private Instant answeredAt;
-    private Instant updatedAt;
+    private List<Answer> answer;
     // Context information
     private String questionText;
     private String optionText;

@@ -44,6 +44,29 @@ public class ApplicationController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/student/{studentId}/grant-program/{grantProgramId}/grant-program-application")
+    public ResponseEntity<GrantProgramApplicationDto> getGrantProgramAndApplicationByStudentIdAndGrantProgramId(
+            @PathVariable String studentId,
+            @PathVariable String grantProgramId) {
+        List<ApplicationDto> applications = applicationService.getApplicationsByStudentId(studentId);
+        ApplicationDto application = applications.stream()
+                .filter(app -> grantProgramId.equals(app.getGrantProgramId()))
+                .findFirst()
+                .orElse(null);
+
+        if (application == null) {
+            System.out.println("application is null");
+            return ResponseEntity.notFound().build();
+        }
+
+        GrantProgramApplicationDto result = new GrantProgramApplicationDto(
+                grantProgramService.getGrantProgramById(grantProgramId),
+                application
+        );
+        System.out.println("application found" + result);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApplicationDto> getApplicationById(@PathVariable String id) {
         try {

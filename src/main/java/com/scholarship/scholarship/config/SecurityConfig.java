@@ -80,6 +80,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
+                        .requestMatchers("/api/student-answers/**").permitAll()
+                        .requestMatchers("/api/messages/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
