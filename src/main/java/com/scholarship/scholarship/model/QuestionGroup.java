@@ -1,10 +1,8 @@
 // src/main/java/com/scholarship/scholarship/valueObject/QuestionGroup.java
 package com.scholarship.scholarship.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.List;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "question_groups")
+@Getter
 public class QuestionGroup {
     @Id
     private String id;

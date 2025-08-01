@@ -20,7 +20,8 @@ public class ComparisonOperatorUtils {
                         ComparisonOperator.NOT_EQUALS,
                         ComparisonOperator.GREATER_THAN,
                         ComparisonOperator.LESS_THAN,
-                        ComparisonOperator.GREATER_THAN_OR_EQUAL
+                        ComparisonOperator.GREATER_THAN_OR_EQUAL,
+                        ComparisonOperator.LESS_THAN_OR_EQUAL
                 );
             case RADIO:
                 return Arrays.asList(

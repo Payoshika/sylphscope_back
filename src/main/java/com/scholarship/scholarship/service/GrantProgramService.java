@@ -1,5 +1,6 @@
 package com.scholarship.scholarship.service;
 import com.scholarship.scholarship.valueObject.Schedule;
+import com.scholarship.scholarship.valueObject.AssignedStaff;
 
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.scholarship.scholarship.dto.ProviderStaffDto;
+import com.scholarship.scholarship.model.ProviderStaff;
+import com.scholarship.scholarship.repository.ProviderStaffRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class GrantProgramService {
 
     private final GrantProgramRepository grantProgramRepository;
     private final GrantProgramMapper grantProgramMapper;
+    private final ProviderStaffRepository providerStaffRepository;
 
     public List<GrantProgramDto> getAllGrantPrograms() {
         return grantProgramRepository.findAll().stream()
@@ -47,6 +52,14 @@ public class GrantProgramService {
         return grantProgramRepository.findByProviderId(providerId).stream()
                 .map(grantProgramMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public Page<GrantProgramDto> searchGrantProgramsByTitle(String keyword, Pageable pageable) {
+        Page<GrantProgram> page = grantProgramRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        List<GrantProgramDto> dtos = page.getContent().stream()
+                .map(grantProgramMapper::toDto)
+                .toList();
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
     }
 
     public Page<GrantProgramDto> getGrantProgramsByProviderId(String providerId, Pageable pageable) {
@@ -127,5 +140,46 @@ public class GrantProgramService {
             grantProgram.getQuestionIds().remove(questionId);
             grantProgramRepository.save(grantProgram);
         }
+    }
+    public GrantProgramDto updateContactPerson(String grantProgramId, ProviderStaffDto providerStaffDto) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        ProviderStaff contactPerson = new ProviderStaff();
+        org.springframework.beans.BeanUtils.copyProperties(providerStaffDto, contactPerson);
+        grantProgram.setContactPerson(contactPerson);
+        GrantProgram updated = grantProgramRepository.save(grantProgram);
+        return grantProgramMapper.toDto(updated);
+    }
+
+    public GrantProgramDto updateAssignedStaff(String grantProgramId, List<AssignedStaff> assignedStaffList) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        grantProgram.setAssignedStaff(assignedStaffList);
+        GrantProgram updated = grantProgramRepository.save(grantProgram);
+        return grantProgramMapper.toDto(updated);
+    }
+
+    public List<AssignedStaff> getAssignedStaff(String grantProgramId) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        return grantProgram.getAssignedStaff() != null ? grantProgram.getAssignedStaff() : new ArrayList<>();
+    }
+
+    public ProviderStaffDto getContactPerson(String grantProgramId) {
+        GrantProgram grantProgram = grantProgramRepository.findById(grantProgramId)
+                .orElseThrow(() -> new ResourceNotFoundException("GrantProgram not found"));
+        ProviderStaffDto dto = new ProviderStaffDto();
+        if (grantProgram.getContactPerson() != null) {
+            org.springframework.beans.BeanUtils.copyProperties(grantProgram.getContactPerson(), dto);
+        }
+        return dto;
+    }
+
+    public ProviderStaffDto getProviderStaffById(String providerStaffId) {
+        com.scholarship.scholarship.model.ProviderStaff staff = providerStaffRepository.findById(providerStaffId)
+            .orElseThrow(() -> new ResourceNotFoundException("Provider staff not found with id: " + providerStaffId));
+        ProviderStaffDto dto = new ProviderStaffDto();
+        org.springframework.beans.BeanUtils.copyProperties(staff, dto);
+        return dto;
     }
 }

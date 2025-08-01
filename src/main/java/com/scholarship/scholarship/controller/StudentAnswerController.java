@@ -34,6 +34,18 @@ public class StudentAnswerController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/by-application")
+    public ResponseEntity<List<StudentAnswerDto>> getAnswersByApplicationId(
+            @RequestParam String studentId,
+            @RequestParam String applicationId) {
+        List<StudentAnswerDto> dtos = studentAnswerService.getAnswersByApplicationId(applicationId)
+                .stream()
+                .filter(answer -> answer.getStudentId().equals(studentId))
+                .map(studentAnswerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<StudentAnswerDto> getAnswerById(@PathVariable String id) {
         return studentAnswerService.getAnswerById(id)
