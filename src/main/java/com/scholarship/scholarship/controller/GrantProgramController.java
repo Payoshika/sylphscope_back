@@ -82,6 +82,14 @@ public class GrantProgramController {
         return ResponseEntity.ok(grantProgram);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<GrantProgramDto>> searchGrantProgramByKeyword(
+            @RequestParam String keyword,
+            Pageable pageable) {
+        Page<GrantProgramDto> result = grantProgramService.searchGrantProgramsByTitle(keyword, pageable);
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping
     public ResponseEntity<Page<GrantProgramDto>> getAllGrantPrograms(Pageable pageable) {
         Page<GrantProgramDto> grantPrograms = grantProgramService.getAllGrantPrograms(pageable);
@@ -112,6 +120,7 @@ public class GrantProgramController {
         List<GrantProgramDto> pageContent = availableGrantPrograms.subList(start, end);
 
         Page<GrantProgramDto> page = new PageImpl<>(pageContent, pageable, availableGrantPrograms.size());
+        System.out.println("page: " + page);
         return ResponseEntity.ok(page);
     }
     
@@ -313,5 +322,18 @@ public class GrantProgramController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(appliedGrantPrograms);
     }
-}
 
+    @GetMapping("/student/{studentId}/applied/search")
+    public ResponseEntity<List<GrantProgramDto>> searchAppliedGrantProgramByKeyword(
+            @PathVariable String studentId,
+            @RequestParam String keyword) {
+        List<ApplicationDto> studentApplications = applicationService.getApplicationsByStudentId(studentId);
+        Set<String> appliedGrantProgramIds = studentApplications.stream()
+                .map(ApplicationDto::getGrantProgramId)
+                .collect(Collectors.toSet());
+        List<GrantProgramDto> appliedGrantPrograms = grantProgramService.getAllGrantPrograms().stream()
+                .filter(gp -> appliedGrantProgramIds.contains(gp.getId()) && gp.getTitle() != null && gp.getTitle().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(appliedGrantPrograms);
+    }
+}

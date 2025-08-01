@@ -54,6 +54,14 @@ public class GrantProgramService {
                 .collect(Collectors.toList());
     }
 
+    public Page<GrantProgramDto> searchGrantProgramsByTitle(String keyword, Pageable pageable) {
+        Page<GrantProgram> page = grantProgramRepository.findByTitleContainingIgnoreCase(keyword, pageable);
+        List<GrantProgramDto> dtos = page.getContent().stream()
+                .map(grantProgramMapper::toDto)
+                .toList();
+        return new PageImpl<>(dtos, pageable, page.getTotalElements());
+    }
+
     public Page<GrantProgramDto> getGrantProgramsByProviderId(String providerId, Pageable pageable) {
         Page<GrantProgram> entityPage = grantProgramRepository.findByProviderId(providerId, pageable);
         List<GrantProgramDto> dtos = entityPage.getContent().stream()
