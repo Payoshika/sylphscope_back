@@ -114,4 +114,11 @@ public class ApplicationController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/grant-program/{grantProgramId}/application-count")
+    public ResponseEntity<Integer> getApplicationCountForGrantProgram(@PathVariable String grantProgramId) {
+        int count = applicationService.getApplicationsByGrantProgramId(grantProgramId).size();
+        System.out.println("Application count for " + grantProgramId + " is " + count);
+        return ResponseEntity.ok(count);
+    }
 }

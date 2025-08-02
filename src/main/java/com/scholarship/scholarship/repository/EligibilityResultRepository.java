@@ -14,4 +14,5 @@ public interface EligibilityResultRepository extends MongoRepository<Eligibility
     Optional<EligibilityResult> findByStudentIdAndGrantProgramId(String studentId, String grantProgramId);
     void deleteByStudentId(String studentId);
     void deleteByGrantProgramId(String grantProgramId);
+    Optional<EligibilityResult> findByApplicationId(String applicationId);
 }

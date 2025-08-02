@@ -2,10 +2,7 @@ package com.scholarship.scholarship.valueObject;
 
 import com.scholarship.scholarship.enums.ComparisonOperator;
 import com.scholarship.scholarship.enums.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class QuestionCondition {
     private String questionId;
     private String description; // Optional description for clarity
