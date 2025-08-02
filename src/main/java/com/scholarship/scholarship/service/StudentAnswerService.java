@@ -77,6 +77,7 @@ public class StudentAnswerService {
                     return studentAnswerRepository.save(answer);
                 })
                 .collect(Collectors.toList());
+
         // Get or create Application
         Application application = applicationRepository.findByStudentIdAndGrantProgramId(studentId, grantProgramId).orElse(null);
         if (application == null) {
@@ -87,8 +88,21 @@ public class StudentAnswerService {
                     .submittedAt(null)
                     .updatedAt(java.time.Instant.now())
                     .build();
-            application = applicationRepository.save(application);
         }
+
+        // Create a map of answers keyed by questionId/questionGroupId
+        Map<String, StudentAnswer> studentAnswerMap = updatedAnswers.stream()
+                .collect(Collectors.toMap(
+                    answer -> answer.getQuestionId() != null && !answer.getQuestionId().isEmpty()
+                            ? answer.getQuestionId()
+                            : answer.getQuestionGroupId(),
+                    answer -> answer
+                ));
+
+        // Set answers in application
+        application.setStudentAnswers(studentAnswerMap);
+        application = applicationRepository.save(application);
+
         // Eligibility check logic
         checkEligibility(studentId, grantProgramId, application.getId(), updatedAnswers);
         return updatedAnswers;
@@ -163,7 +177,7 @@ public class StudentAnswerService {
             result = existingResultOpt.get();
             result.setStudentId(studentId);
             result.setGrantProgramId(grantProgramId);
-            result.setIsEligible(allPassed);
+            result.setEligible(allPassed);  // Changed from setIsEligible to setEligible
             result.setPassedCriteria(passedCriteria);
             result.setFailedCriteria(failedCriteria);
             result.setEvaluatedAt(java.time.Instant.now());
@@ -172,13 +186,20 @@ public class StudentAnswerService {
                     .applicationId(applicationId)
                     .studentId(studentId)
                     .grantProgramId(grantProgramId)
-                    .isEligible(allPassed)
+                    .eligible(allPassed)  // Changed from isEligible to eligible
                     .passedCriteria(passedCriteria)
                     .failedCriteria(failedCriteria)
                     .evaluatedAt(java.time.Instant.now())
                     .build();
         }
-        eligibilityResultRepository.save(result);
+        // Save EligibilityResult
+        EligibilityResult savedResult = eligibilityResultRepository.save(result);
+
+        // Update Application's eligibilityResult
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found with id: " + applicationId));
+        application.setEligibilityResult(savedResult);
+        applicationRepository.save(application);
     }
 
     private boolean checkCondition(Answer answer, QuestionCondition condition) {

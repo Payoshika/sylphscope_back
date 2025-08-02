@@ -17,10 +17,19 @@ public class EligibilityResultDto {
     private String studentId;
     private String applicationId;
     private String grantProgramId;
-    private boolean isEligible;
+    private boolean eligible;  // Changed from isEligible to eligible
     private Instant evaluatedAt;
     private Instant updatedAt;
     // Detailed breakdown
     private List<String> failedCriteria;
     private List<String> passedCriteria;
+
+    // Keep this method for backward compatibility
+    public boolean isEligible() {
+        return this.eligible;
+    }
+
+    public void setIsEligible(boolean eligible) {
+        this.eligible = eligible;
+    }
 }

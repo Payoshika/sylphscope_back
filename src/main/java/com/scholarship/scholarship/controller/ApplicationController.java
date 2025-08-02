@@ -83,7 +83,14 @@ public class ApplicationController {
 
     @GetMapping("/grant-program/{grantProgramId}")
     public ResponseEntity<List<ApplicationDto>> getApplicationsByGrantProgramId(@PathVariable String grantProgramId) {
-        return ResponseEntity.ok(applicationService.getApplicationsByGrantProgramId(grantProgramId));
+        List<ApplicationDto> applications = applicationService.getApplicationsByGrantProgramId(grantProgramId);
+        System.out.println("Applications for grant program " + grantProgramId + ": " + applications);
+        //get the first application and its eligibility status
+        if (!applications.isEmpty()) {
+            applications.forEach(application -> System.out.println(application));
+            System.out.println("First application eligibility status: " + applications.get(0).getEligibilityResult());
+        }
+        return ResponseEntity.ok(applications);
     }
 
     @PostMapping

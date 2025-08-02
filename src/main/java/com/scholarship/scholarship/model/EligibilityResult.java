@@ -26,7 +26,7 @@ public class EligibilityResult {
     private String studentId;
     @Indexed
     private String grantProgramId;
-    private boolean isEligible;
+    private boolean eligible;  // Changed from isEligible to eligible
     private List<String> passedCriteria;
     private List<String> failedCriteria;
     @CreatedDate
@@ -34,7 +34,12 @@ public class EligibilityResult {
     @LastModifiedDate
     private Instant updatedAt;
 
-    public void setIsEligible(boolean allPassed) {
-        this.isEligible = allPassed;
+    // Keep this method for backward compatibility during migration
+    public void setIsEligible(boolean eligible) {
+        this.eligible = eligible;
+    }
+
+    public boolean isEligible() {
+        return this.eligible;
     }
 }
