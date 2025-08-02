@@ -38,7 +38,7 @@ public class Application {
     @NotNull(message = "Status is required")
     private ApplicationStatus status;
 
-    private EligibilityResult eiligibilityResult;
+    private EligibilityResult eligibilityResult;
 
     private Map<String, StudentAnswer> studentAnswers;
 

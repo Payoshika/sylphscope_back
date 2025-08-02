@@ -83,7 +83,14 @@ public class ApplicationController {
 
     @GetMapping("/grant-program/{grantProgramId}")
     public ResponseEntity<List<ApplicationDto>> getApplicationsByGrantProgramId(@PathVariable String grantProgramId) {
-        return ResponseEntity.ok(applicationService.getApplicationsByGrantProgramId(grantProgramId));
+        List<ApplicationDto> applications = applicationService.getApplicationsByGrantProgramId(grantProgramId);
+        System.out.println("Applications for grant program " + grantProgramId + ": " + applications);
+        //get the first application and its eligibility status
+        if (!applications.isEmpty()) {
+            applications.forEach(application -> System.out.println(application));
+            System.out.println("First application eligibility status: " + applications.get(0).getEligibilityResult());
+        }
+        return ResponseEntity.ok(applications);
     }
 
     @PostMapping
@@ -113,5 +120,12 @@ public class ApplicationController {
         return applicationService.deleteApplication(id)
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/grant-program/{grantProgramId}/application-count")
+    public ResponseEntity<Integer> getApplicationCountForGrantProgram(@PathVariable String grantProgramId) {
+        int count = applicationService.getApplicationsByGrantProgramId(grantProgramId).size();
+        System.out.println("Application count for " + grantProgramId + " is " + count);
+        return ResponseEntity.ok(count);
     }
 }

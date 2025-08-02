@@ -75,6 +75,8 @@ public class StudentAnswerController {
         List<StudentAnswerDto> dtos = updatedAnswers.stream()
                 .map(studentAnswerMapper::toDto)
                 .collect(Collectors.toList());
+
+
         return ResponseEntity.ok(dtos);
     }
 
