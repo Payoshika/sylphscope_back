@@ -1,9 +1,6 @@
 package com.scholarship.scholarship.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -18,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "eligibility_results")
+@Getter
+@Setter
 public class EligibilityResult {
     @Id
     private String id;
@@ -27,11 +26,20 @@ public class EligibilityResult {
     private String studentId;
     @Indexed
     private String grantProgramId;
-    private boolean isEligible;
+    private boolean eligible;  // Changed from isEligible to eligible
     private List<String> passedCriteria;
     private List<String> failedCriteria;
     @CreatedDate
     private Instant evaluatedAt;
     @LastModifiedDate
     private Instant updatedAt;
+
+    // Keep this method for backward compatibility during migration
+    public void setIsEligible(boolean eligible) {
+        this.eligible = eligible;
+    }
+
+    public boolean isEligible() {
+        return this.eligible;
+    }
 }

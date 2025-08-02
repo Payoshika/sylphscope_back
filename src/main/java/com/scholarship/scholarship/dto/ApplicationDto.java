@@ -2,10 +2,7 @@ package com.scholarship.scholarship.dto;
 
 import com.scholarship.scholarship.enums.ApplicationStatus;
 import com.scholarship.scholarship.model.StudentAnswer;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 public class ApplicationDto {
     private String id;
     private String studentId;
