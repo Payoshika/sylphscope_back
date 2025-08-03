@@ -4,12 +4,14 @@ import com.scholarship.scholarship.enums.StaffRole;
 import com.scholarship.scholarship.valueObject.ProviderStaffAccessRights;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProviderStaffDto {
     private String id;
     private String userId;
