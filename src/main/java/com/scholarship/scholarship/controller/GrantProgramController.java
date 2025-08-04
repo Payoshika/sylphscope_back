@@ -10,6 +10,7 @@ import com.scholarship.scholarship.dto.grantProgramDtos.QuestionGroupEligibility
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramAvailableQuestionsDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.CreateGrantProgramRequestDto;
 import com.scholarship.scholarship.enums.DataType;
+import com.scholarship.scholarship.enums.GrantStatus;
 import com.scholarship.scholarship.enums.InputType;
 import com.scholarship.scholarship.service.GrantProgramService;
 import com.scholarship.scholarship.service.QuestionOptionSetService;
@@ -107,12 +108,14 @@ public class GrantProgramController {
     public ResponseEntity<Page<GrantProgramDto>> getGrantProgramByStudentId(
             @PathVariable String studentId,
             Pageable pageable) {
-        List<GrantProgramDto> allGrantPrograms = grantProgramService.getAllGrantPrograms();
+        List<GrantProgramDto> allOpenGrantPrograms = grantProgramService.getAllGrantPrograms().stream()
+                .filter(gp -> gp.getStatus() == GrantStatus.OPEN)
+                .collect(Collectors.toList());
         List<ApplicationDto> studentApplications = applicationService.getApplicationsByStudentId(studentId);
         Set<String> appliedGrantProgramIds = studentApplications.stream()
                 .map(ApplicationDto::getGrantProgramId)
                 .collect(Collectors.toSet());
-        List<GrantProgramDto> availableGrantPrograms = allGrantPrograms.stream()
+        List<GrantProgramDto> availableGrantPrograms = allOpenGrantPrograms.stream()
                 .filter(gp -> !appliedGrantProgramIds.contains(gp.getId()))
                 .collect(Collectors.toList());
         int start = (int) pageable.getOffset();
@@ -335,5 +338,27 @@ public class GrantProgramController {
                 .filter(gp -> appliedGrantProgramIds.contains(gp.getId()) && gp.getTitle() != null && gp.getTitle().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(appliedGrantPrograms);
+    }
+
+    @PutMapping("/{grantProgramId}/make-public")
+    public ResponseEntity<GrantProgramDto> makePublic(@PathVariable String grantProgramId) {
+        GrantProgramDto grantProgramDto = grantProgramService.getGrantProgramById(grantProgramId);
+        if (grantProgramDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        grantProgramDto.setStatus(GrantStatus.OPEN);
+        GrantProgramDto updatedDto = grantProgramService.updateGrantProgram(grantProgramId, grantProgramDto);
+        return ResponseEntity.ok(updatedDto);
+    }
+
+    @PutMapping("/{grantProgramId}/close-program")
+    public ResponseEntity<GrantProgramDto> closeProgram(@PathVariable String grantProgramId) {
+        GrantProgramDto grantProgramDto = grantProgramService.getGrantProgramById(grantProgramId);
+        if (grantProgramDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        grantProgramDto.setStatus(GrantStatus.CLOSED);
+        GrantProgramDto updatedDto = grantProgramService.updateGrantProgram(grantProgramId, grantProgramDto);
+        return ResponseEntity.ok(updatedDto);
     }
 }
