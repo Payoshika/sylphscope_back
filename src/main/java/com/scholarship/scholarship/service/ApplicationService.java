@@ -80,4 +80,20 @@ public class ApplicationService {
         applicationRepository.deleteById(id);
         return true;
     }
+
+    public ApplicationDto updateApplicationStatus(String applicationId, String status) {
+        return applicationRepository.findById(applicationId)
+                .map(application -> {
+                    ApplicationStatus applicationStatus;
+                    try {
+                        applicationStatus = ApplicationStatus.valueOf(status);
+                    } catch (IllegalArgumentException e) {
+                        throw new RuntimeException("Invalid application status: " + status);
+                    }
+                    application.setStatus(applicationStatus);
+                    Application updatedApplication = applicationRepository.save(application);
+                    return applicationMapper.toDto(updatedApplication);
+                })
+                .orElse(null);
+    }
 }
