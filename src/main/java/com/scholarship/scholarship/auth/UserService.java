@@ -89,4 +89,13 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    // Create a new user and return the saved User object
+    public User createUser(User user) {
+        // Encode password if not already encoded
+        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) { // BCrypt hash check
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        return userRepository.save(user);
+    }
+
 }

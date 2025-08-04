@@ -6,12 +6,14 @@ import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramApplicationD
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.service.ApplicationService;
 import com.scholarship.scholarship.service.GrantProgramService;
+import com.scholarship.scholarship.service.EvaluationOfAnswerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,8 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     @Autowired
     private GrantProgramService grantProgramService;
+    @Autowired
+    private EvaluationOfAnswerService evaluationOfAnswerService;
 
     @Autowired
     public ApplicationController(ApplicationService applicationService) {
@@ -127,5 +131,85 @@ public class ApplicationController {
         int count = applicationService.getApplicationsByGrantProgramId(grantProgramId).size();
         System.out.println("Application count for " + grantProgramId + " is " + count);
         return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/{applicationId}/evaluator/{evaluatorId}")
+    public ResponseEntity<List<com.scholarship.scholarship.dto.EvaluationOfAnswerDto>> getEvaluationsByApplicationIdAndEvaluatorId(
+            @PathVariable String applicationId,
+            @PathVariable String evaluatorId) {
+        List<com.scholarship.scholarship.dto.EvaluationOfAnswerDto> evaluations =
+                evaluationOfAnswerService.getEvaluationsByApplicationIdAndEvaluatorId(applicationId, evaluatorId);
+        System.out.println("Evaluations for application " + applicationId + " and evaluator " + evaluatorId + ": " + evaluations);
+        return ResponseEntity.ok(evaluations);
+    }
+
+    @PutMapping("/{applicationId}/select")
+    public ResponseEntity<ApplicationDto> addReceiver(@PathVariable String applicationId) {
+        try {
+            ApplicationDto application = applicationService.getApplicationById(applicationId);
+            application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.SELECTED);
+            ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+            System.out.println("Application " + applicationId + " status updated to SELECTED");
+            return ResponseEntity.ok(updatedApplication);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/select")
+    public ResponseEntity<List<ApplicationDto>> updateReceivers(@RequestBody List<String> applicationIds) {
+        List<ApplicationDto> updatedApplications = new ArrayList<>();
+        for (String applicationId : applicationIds) {
+            try {
+                ApplicationDto application = applicationService.getApplicationById(applicationId);
+                application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.SELECTED);
+                ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+                updatedApplications.add(updatedApplication);
+            } catch (ResourceNotFoundException e) {
+                System.out.println("Application not found: " + applicationId);
+            }
+        }
+        System.out.println("Updated " + updatedApplications.size() + " applications to SELECTED status");
+        return ResponseEntity.ok(updatedApplications);
+    }
+
+    @PutMapping("/{applicationId}/reject")
+    public ResponseEntity<ApplicationDto> rejectReceiver(@PathVariable String applicationId) {
+        try {
+            ApplicationDto application = applicationService.getApplicationById(applicationId);
+            application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.NOT_SELECTED);
+            ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+            System.out.println("Application " + applicationId + " status updated to NOT_SELECTED");
+            return ResponseEntity.ok(updatedApplication);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/reject")
+    public ResponseEntity<List<ApplicationDto>> rejectReceivers(@RequestBody List<String> applicationIds) {
+        List<ApplicationDto> updatedApplications = new ArrayList<>();
+        for (String applicationId : applicationIds) {
+            try {
+                ApplicationDto application = applicationService.getApplicationById(applicationId);
+                application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.NOT_SELECTED);
+                ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+                updatedApplications.add(updatedApplication);
+            } catch (ResourceNotFoundException e) {
+                System.out.println("Application not found: " + applicationId);
+            }
+        }
+        System.out.println("Updated " + updatedApplications.size() + " applications to NOT_SELECTED status");
+        return ResponseEntity.ok(updatedApplications);
+    }
+
+    @PutMapping("/{applicationId}/apply-grant")
+    public ResponseEntity<ApplicationDto> applyGrant(@PathVariable String applicationId) {
+        ApplicationDto updatedApplication = applicationService.updateApplicationStatus(applicationId, "APPLIED");
+        if (updatedApplication != null) {
+            return ResponseEntity.ok(updatedApplication);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
