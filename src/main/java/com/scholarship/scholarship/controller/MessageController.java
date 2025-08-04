@@ -1,6 +1,5 @@
 package com.scholarship.scholarship.controller;
 
-import com.scholarship.scholarship.dto.CreateMessageWithContentRequest;
 import com.scholarship.scholarship.model.Message;
 import com.scholarship.scholarship.model.MessageContent;
 import com.scholarship.scholarship.service.MessageContentService;
@@ -71,7 +70,7 @@ public class MessageController {
     }
 
     @PostMapping("/create-with-content")
-    public Message createMessageWithContent(@RequestBody CreateMessageWithContentRequest request) {
-        return messageService.createMessageWithContent(request.getMessage(), request.getMessageContent());
+    public Message createMessageWithContent(@RequestBody Message message, @RequestBody MessageContent messageContent) {
+        return messageService.createMessageWithContent(message, messageContent);
     }
 }

@@ -3,6 +3,7 @@ package com.scholarship.scholarship.repository;
 import com.scholarship.scholarship.model.ProviderInvitation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,3 @@ public interface ProviderInvitationRepository extends MongoRepository<ProviderIn
     List<ProviderInvitation> findByUsedFalseAndExpiredFalseAndExpiresAtBefore(Instant now);
     void deleteByUsedTrueOrExpiredTrue();
 }
-
