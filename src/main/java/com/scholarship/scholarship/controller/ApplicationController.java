@@ -36,6 +36,14 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.getAllApplications());
     }
 
+    @PostMapping("/empty")
+    public ResponseEntity<ApplicationDto> createEmptyApplication(@Valid @RequestBody ApplicationDto applicationDto) {
+        // Ensure the incoming DTO has no ID
+        applicationDto.setId(null);
+        ApplicationDto createdApplication = applicationService.createApplication(applicationDto);
+        return new ResponseEntity<>(createdApplication, HttpStatus.CREATED);
+    }
+
     @GetMapping("/student/{studentId}/grant-program-applications")
     public ResponseEntity<List<GrantProgramApplicationDto>> getGrantProgramAndApplicationByStudentId(
             @PathVariable String studentId) {
@@ -58,15 +66,14 @@ public class ApplicationController {
                 .findFirst()
                 .orElse(null);
 
-        if (application == null) {
-            System.out.println("application is null");
-            return ResponseEntity.notFound().build();
-        }
-
         GrantProgramApplicationDto result = new GrantProgramApplicationDto(
                 grantProgramService.getGrantProgramById(grantProgramId),
                 application
         );
+        if (application == null) {
+            System.out.println("application is null");
+            return ResponseEntity.ok(result);
+        }
         System.out.println("application found" + result);
         return ResponseEntity.ok(result);
     }
