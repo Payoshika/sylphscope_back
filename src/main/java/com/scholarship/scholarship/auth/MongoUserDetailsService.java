@@ -39,4 +39,6 @@ public class MongoUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Google user not found"));
         return new UserDetailsImpl(user);
     }
+
+
 }

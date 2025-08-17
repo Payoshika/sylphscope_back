@@ -5,6 +5,7 @@ import com.scholarship.scholarship.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -62,28 +63,38 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
-                        //this is for testing creating question
-                        .requestMatchers("/api/questions/**").permitAll()
-                        .requestMatchers("/api/option-sets/**").permitAll()
-                        .requestMatchers("/api/eligibility-criteria/**").permitAll()
-                        .requestMatchers("/api/question-groups/**").permitAll()
-                        .requestMatchers("/api/grant-programs/**").permitAll()
-                        .requestMatchers("/api/questions/**").permitAll()
-                        .requestMatchers("/api/eligibility-criteria/**").permitAll()
-                        .requestMatchers("/api/selection-criteria/**").permitAll()
-                        .requestMatchers("/api/evaluation-of-answers/**").permitAll()
-                        .requestMatchers("/api/providers/**").permitAll()
-                        .requestMatchers("/api/provider-staff/**").permitAll()
-                        .requestMatchers("/api/students/**").permitAll()
-                        .requestMatchers("/api/applications/**").permitAll()
-                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+                        // Only GET requests for students, all requests for providers
+                        .requestMatchers(HttpMethod.GET, "/api/questions/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/questions/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/option-sets/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/option-sets/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/eligibility-criteria/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/eligibility-criteria/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/question-groups/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/question-groups/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/grant-programs/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/grant-programs/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/selection-criteria/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/selection-criteria/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/evaluation-of-answers/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/evaluation-of-answers/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/providers/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/providers/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/provider-staff/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/provider-staff/**").hasRole("PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/applications/**").hasAnyRole("PROVIDER", "STUDENT")
+                        .requestMatchers("/api/applications/**").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("PROVIDER", "STUDENT")
+                        .requestMatchers("/api/students/**").hasRole("STUDENT")
+                        .requestMatchers(HttpMethod.GET, "/api/student-answers/**").hasAnyRole("PROVIDER", "STUDENT")
+                        .requestMatchers("/api/student-answers/**").hasRole("STUDENT")
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
-                        .requestMatchers("/api/student/**").hasRole("STUDENT")
-                        .requestMatchers("/api/student-answers/**").permitAll()
-                        .requestMatchers("/api/messages/**").permitAll()
-
+                        .requestMatchers("/api/student/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/messages/**").hasAnyRole("STUDENT", "PROVIDER")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
