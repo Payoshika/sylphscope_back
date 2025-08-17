@@ -40,7 +40,23 @@ public class StudentAnswerController {
             @RequestParam String applicationId) {
         List<StudentAnswerDto> dtos = studentAnswerService.getAnswersByApplicationId(applicationId)
                 .stream()
-                .filter(answer -> answer.getStudentId().equals(studentId))
+                .filter(answer -> answer.getStudentId() != null && answer.getStudentId().contains(studentId))
+                .map(studentAnswerMapper::toDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/by-student")
+    public ResponseEntity<List<StudentAnswerDto>> getAnswersByStudentIdParam(@RequestParam String studentId) {
+        List<StudentAnswerDto> dtos = studentAnswerService.getAnswersByStudentId(studentId)
+                .stream()
+                .collect(Collectors.toMap(
+                        answer -> answer.getQuestionId() != null && !answer.getQuestionId().isEmpty() ? answer.getQuestionId() : answer.getQuestionGroupId(),
+                        answer -> answer,
+                        (a1, a2) -> a1.getAnsweredAt().isAfter(a2.getAnsweredAt()) ? a1 : a2
+                ))
+                .values()
+                .stream()
                 .map(studentAnswerMapper::toDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
