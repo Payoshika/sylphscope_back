@@ -11,6 +11,8 @@ import java.util.Calendar;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
+
 import com.scholarship.scholarship.repository.UserRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -47,10 +49,38 @@ public class JwtUtils {
             throw new IllegalArgumentException("Unsupported principal type: " +
                     authentication.getPrincipal().getClass().getName());
         }
+        List<String> roles;
+        if (authentication.getPrincipal() instanceof UserDetailsImpl userPrincipal) {
+            userId = userPrincipal.getId();
+            username = userPrincipal.getUsername();
+            roles = userPrincipal.getAuthorities().stream()
+                    .map(a -> a.getAuthority().replace("ROLE_", ""))
+                    .toList();
+        } else if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
+            User user = userRepository.findByEmail(oidcUser.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            userId = user.getId();
+            username = oidcUser.getEmail();
+            roles = user.getRoles().stream()
+                    .map(role -> role.name())
+                    .toList();
+        } else if (authentication.getPrincipal() instanceof OAuth2UserImpl oauth2User) {
+            User user = userRepository.findByEmail((String) oauth2User.getAttributes().get("email"))
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            userId = user.getId();
+            username = (String) oauth2User.getAttributes().get("email");
+            roles = user.getRoles().stream()
+                    .map(role -> role.name())
+                    .toList();
+        } else {
+            throw new IllegalArgumentException("Unsupported principal type: " +
+                    authentication.getPrincipal().getClass().getName());
+        }
 
         return Jwts.builder()
                 .setSubject(userId)
                 .claim("username", username)  // Store username as a claim
+                .claim("roles", roles)
                 .claim("mfa_verified", false) // Explicitly mark as not MFA verified initially, later updated by users
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtProperties.getExpirationMs()))
