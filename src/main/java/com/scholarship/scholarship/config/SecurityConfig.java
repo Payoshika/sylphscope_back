@@ -85,7 +85,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/provider-staff/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/provider-staff/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/applications/**").hasAnyRole("PROVIDER", "STUDENT")
-                        .requestMatchers("/api/applications/**").hasRole("STUDENT")
+                        .requestMatchers("/api/applications/**").hasAnyRole("PROVIDER", "STUDENT")
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("PROVIDER", "STUDENT")
                         .requestMatchers("/api/students/**").hasRole("STUDENT")
                         .requestMatchers(HttpMethod.GET, "/api/student-answers/**").hasAnyRole("PROVIDER", "STUDENT")
@@ -95,6 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/provider/**").hasRole("PROVIDER")
                         .requestMatchers("/api/student/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/messages/**").hasAnyRole("STUDENT", "PROVIDER")
+
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

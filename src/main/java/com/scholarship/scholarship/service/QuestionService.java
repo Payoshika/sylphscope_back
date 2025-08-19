@@ -26,18 +26,27 @@ import java.time.Instant;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final OptionService optionService;
+    private final QuestionOptionSetRepository questionOptionSetRepository;
+    private final QuestionGroupRepository questionGroupRepository;
+    private final QuestionOptionSetService questionOptionSetService;
+
     @Autowired
-    private OptionService optionService;
-    @Autowired
-    private QuestionOptionSetRepository questionOptionSetRepository;
-    @Autowired
-    private QuestionGroupRepository questionGroupRepository;
-    @Autowired
-    private QuestionOptionSetService questionOptionSetService;
+    public QuestionService(
+            QuestionRepository questionRepository,
+            OptionService optionService,
+            QuestionOptionSetRepository questionOptionSetRepository,
+            QuestionGroupRepository questionGroupRepository,
+            QuestionOptionSetService questionOptionSetService) {
+        this.questionRepository = questionRepository;
+        this.optionService = optionService;
+        this.questionOptionSetRepository = questionOptionSetRepository;
+        this.questionGroupRepository = questionGroupRepository;
+        this.questionOptionSetService = questionOptionSetService;
+    }
 
     public QuestionDto createQuestionWithOptions(QuestionDto questionDto, List<OptionDto> options) {
         validateInputTypeAndDataType(questionDto.getInputType(), questionDto.getQuestionDataType());
@@ -137,8 +146,8 @@ public class QuestionService {
                 .inputType(question.getInputType())
                 .questionDataType(question.getQuestionDataType())
                 .description(question.getDescription())
-                .isRequired(question.getIsRequired())
-                .requiresConditionalUpload(question.getRequiresConditionalUpload())
+                .isRequired(Boolean.TRUE.equals(question.getIsRequired()))
+                .requiresConditionalUpload(Boolean.TRUE.equals(question.getRequiresConditionalUpload()))
                 .conditionalUploadLabel(question.getConditionalUploadLabel())
                 .optionSetId(question.getOptionSetId())
                 .createdAt(question.getCreatedAt())

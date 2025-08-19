@@ -29,20 +29,22 @@ import com.scholarship.scholarship.repository.ApplicationRepository;
 
 @Service
 public class StudentAnswerService {
-
     private final StudentAnswerRepository studentAnswerRepository;
+    private final EligibilityCriteriaRepository eligibilityCriteriaRepository;
+    private final EligibilityResultRepository eligibilityResultRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Autowired
-    public StudentAnswerService(StudentAnswerRepository studentAnswerRepository) {
+    public StudentAnswerService(
+            StudentAnswerRepository studentAnswerRepository,
+            EligibilityCriteriaRepository eligibilityCriteriaRepository,
+            EligibilityResultRepository eligibilityResultRepository,
+            ApplicationRepository applicationRepository) {
         this.studentAnswerRepository = studentAnswerRepository;
+        this.eligibilityCriteriaRepository = eligibilityCriteriaRepository;
+        this.eligibilityResultRepository = eligibilityResultRepository;
+        this.applicationRepository = applicationRepository;
     }
-
-    @Autowired
-    private EligibilityCriteriaRepository eligibilityCriteriaRepository;
-    @Autowired
-    private EligibilityResultRepository eligibilityResultRepository;
-    @Autowired
-    private ApplicationRepository applicationRepository;
 
     public List<StudentAnswer> getAnswersByStudentId(String studentId) {
         return studentAnswerRepository.findByStudentId(studentId);

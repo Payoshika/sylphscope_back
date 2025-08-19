@@ -48,8 +48,7 @@ public class GrantProgramController {
     private final GrantProgramService grantProgramService;
     private final QuestionOptionSetService questionOptionSetService;
     private final QuestionService questionService;
-    @Autowired
-    private ApplicationService applicationService;
+    private final ApplicationService applicationService;
 
     @PostMapping
     public ResponseEntity<GrantProgramDto> createGrantProgram(@RequestBody CreateGrantProgramRequestDto request) {
