@@ -21,14 +21,16 @@ import java.util.List;
 public class ApplicationController {
 
     private final ApplicationService applicationService;
-    @Autowired
-    private GrantProgramService grantProgramService;
-    @Autowired
-    private EvaluationOfAnswerService evaluationOfAnswerService;
+    private final GrantProgramService grantProgramService;
+    private final EvaluationOfAnswerService evaluationOfAnswerService;
 
     @Autowired
-    public ApplicationController(ApplicationService applicationService) {
+    public ApplicationController(ApplicationService applicationService,
+                                 GrantProgramService grantProgramService,
+                                 EvaluationOfAnswerService evaluationOfAnswerService) {
         this.applicationService = applicationService;
+        this.grantProgramService = grantProgramService;
+        this.evaluationOfAnswerService = evaluationOfAnswerService;
     }
 
     @GetMapping

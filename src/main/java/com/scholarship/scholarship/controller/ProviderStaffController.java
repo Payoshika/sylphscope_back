@@ -210,10 +210,7 @@ public class ProviderStaffController {
     public ResponseEntity<Map<String, Object>> getInvitationDetails(@PathVariable String token) {
         try {
             ProviderInvitation invitation = providerInvitationService.getInvitationByToken(token);
-
-            // Get provider details
             ProviderDto provider = providerService.getProviderById(invitation.getProviderId()).orElse(null);
-
             Map<String, Object> response = new HashMap<>();
             response.put("email", invitation.getEmail());
             response.put("firstName", invitation.getFirstName());
@@ -222,11 +219,8 @@ public class ProviderStaffController {
             response.put("providerName", provider != null ? provider.getOrganisationName() : "Unknown");
             response.put("expired", invitation.isExpired() || invitation.getExpiresAt().isBefore(java.time.Instant.now()));
             response.put("used", invitation.isUsed());
-
             return ResponseEntity.ok(response);
-        } catch (ResourceNotFoundException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Invalid invitation token");
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }

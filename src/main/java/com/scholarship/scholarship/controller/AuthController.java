@@ -69,7 +69,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         try {
             UserDTO userDTO = userService.registerNewUser(signupRequest);
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User registered successfully!"));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .badRequest()
