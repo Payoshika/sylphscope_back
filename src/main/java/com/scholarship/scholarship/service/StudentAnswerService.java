@@ -132,7 +132,7 @@ public class StudentAnswerService {
                     // If no answer, false
                     passed = false;
                 } else {
-                    passed = checkCondition(ans.getAnswer().getFirst(), criteria.getSimpleCondition());
+                    passed = checkCondition(ans.getAnswer().get(0), criteria.getSimpleCondition());
                 }
             } else {
                 // Group of questions
@@ -218,12 +218,12 @@ public class StudentAnswerService {
         if (operator == null || dataType == null) return false;
         boolean result = false;
         switch (operator) {
-            case ComparisonOperator.EQUALS:
+            case EQUALS:
                 if (values == null || values.size() != 1) return false;
                 Object expected = values.get(0);
                 result = compareByType(answer, expected, dataType) == 0;
                 break;
-            case ComparisonOperator.IN_LIST:
+            case IN_LIST:
                 System.out.println("Checking IN_LIST operator");
                 if (values == null || values.isEmpty()) return false;
                 for (Object ans : answer.getAnswer()) {
@@ -260,22 +260,22 @@ public class StudentAnswerService {
                     if (result) break;
                 }
                 break;
-            case ComparisonOperator.GREATER_THAN:
+            case GREATER_THAN:
                 if (values == null || values.size() != 1) return false;
                 Object gtValue = values.get(0);
                 result = compareByType(answer, gtValue, dataType) > 0;
                 break;
-            case ComparisonOperator.LESS_THAN:
+            case LESS_THAN:
                 if (values == null || values.size() != 1) return false;
                 Object ltValue = values.get(0);
                 result = compareByType(answer, ltValue, dataType) < 0;
                 break;
-            case ComparisonOperator.NOT_EQUALS:
+            case NOT_EQUALS:
                 if (values == null || values.size() != 1) return false;
                 Object notExpected = values.get(0);
                 result = compareByType(answer, notExpected, dataType) != 0;
                 break;
-            case ComparisonOperator.CONTAINS:
+            case CONTAINS:
                 System.out.println("Checking CONTAINS operator");
                 System.out.println("Answer: " + answer.getAnswer());
                 if (values == null || values.isEmpty()) return false;
@@ -315,27 +315,27 @@ public class StudentAnswerService {
         try {
             switch (dataType) {
                 case "INTEGER":
-                    Integer aInt = Integer.parseInt((String) answer.getAnswer().getFirst());
+                    Integer aInt = Integer.parseInt((String) answer.getAnswer().get(0));
                     Integer vInt = value instanceof Integer ? (Integer) value : Integer.parseInt(value.toString());
                     return aInt.compareTo(vInt);
                 case "DOUBLE":
-                    Double aDouble = Double.parseDouble((String) answer.getAnswer().getFirst());
+                    Double aDouble = Double.parseDouble((String) answer.getAnswer().get(0));
                     Double vDouble = value instanceof Double ? (Double) value : Double.parseDouble(value.toString());
                     return aDouble.compareTo(vDouble);
                 case "BOOLEAN":
-                    Boolean aBool = Boolean.parseBoolean((String) answer.getAnswer().getFirst());
+                    Boolean aBool = Boolean.parseBoolean((String) answer.getAnswer().get(0));
                     Boolean vBool = value instanceof Boolean ? (Boolean) value : Boolean.parseBoolean(value.toString());
                     return aBool.compareTo(vBool);
                 case "DATE":
                     // Expecting date as Map<String, String> with keys: year, month, day
                     Map<String, String> aDateMap = null;
                     Map<String, String> vDateMap = null;
-                    if (answer.getAnswer().getFirst() instanceof Map) {
-                        aDateMap = (Map<String, String>) answer.getAnswer().getFirst();
-                    } else if (answer.getAnswer().getFirst() instanceof String) {
+                    if (answer.getAnswer().get(0) instanceof Map) {
+                        aDateMap = (Map<String, String>) answer.getAnswer().get(0);
+                    } else if (answer.getAnswer().get(0) instanceof String) {
                         // Try to parse JSON string to map
                         try {
-                            aDateMap = new ObjectMapper().readValue((String) answer.getAnswer().getFirst(), java.util.Map.class);
+                            aDateMap = new ObjectMapper().readValue((String) answer.getAnswer().get(0), java.util.Map.class);
                         } catch (Exception e) {
                             return -1;
                         }
@@ -361,7 +361,7 @@ public class StudentAnswerService {
                     return aLocalDate.compareTo(vLocalDate);
 
                 default:
-                    return answer.getAnswer().getFirst().toString().compareTo(value.toString());
+                    return answer.getAnswer().get(0).toString().compareTo(value.toString());
             }
         } catch (Exception e) {
             return -1;
