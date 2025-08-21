@@ -19,4 +19,5 @@ public class ProviderDto {
     private String organisationDescription;
     private String logoUrl;
     private Instant createdAt;
+    private String invitationCode;
 }

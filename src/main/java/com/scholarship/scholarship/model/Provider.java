@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
@@ -45,6 +46,10 @@ public class Provider {
 
     @Size(max = 500, message = "Logo URL cannot exceed 500 characters")
     private String logoUrl;
+
+    @Indexed(unique = true)
+    @Size(max = 20, message = "Invitation code cannot exceed 20 characters")
+    private String invitationCode;
 
     @CreatedDate
     private Instant createdAt;

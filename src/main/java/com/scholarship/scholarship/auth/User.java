@@ -43,7 +43,6 @@ public class User {
     //User account status, default is enabled
     private boolean enabled = true;
 
-    @NotEmpty(message = "User must have at least one role")
     private List<Role> roles;
 
     @CreatedDate

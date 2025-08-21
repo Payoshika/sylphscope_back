@@ -23,7 +23,7 @@ public class ProviderStaff {
     @NotBlank(message = "User ID is required")
     private String userId;
 
-    @NotBlank(message = "Provider ID is required")
+//    @NotBlank(message = "Provider ID is required")
     private String providerId;
 
     @NotNull(message = "Staff role is required")
