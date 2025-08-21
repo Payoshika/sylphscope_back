@@ -74,7 +74,7 @@ class AuthControllerTest {
         UserDTO userDTO = new UserDTO();
         when(userService.registerNewUser(signupRequest)).thenReturn(userDTO);
         ResponseEntity<?> response = authController.registerUser(signupRequest);
-        assertEquals(200, response.getStatusCode().value());
+        assertEquals(201, response.getStatusCode().value());
         assertTrue(response.getBody() instanceof MessageResponse);
     }
 
