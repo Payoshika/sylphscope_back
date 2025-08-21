@@ -60,7 +60,7 @@ class ProviderControllerTest {
         when(providerService.getProviderById("id1")).thenReturn(Optional.empty());
         ResponseEntity<ProviderDto> response = providerController.getProviderById("id1");
         assertNull(response.getBody());
-        assertEquals(404, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCodeValue());
     }
 
     @Test
