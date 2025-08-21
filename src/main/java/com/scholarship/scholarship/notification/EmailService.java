@@ -16,7 +16,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
-    @Value("${postman_server_token}")
+    @Value("${env.POSTMAN_SERVER_TOKEN}")
     private String postmarkToken;
 
     public void sendMfaCode(String toEmail, String code) {
