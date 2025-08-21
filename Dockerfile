@@ -1,14 +1,28 @@
-# Use OpenJDK 17 as base image
-FROM eclipse-temurin:17-jre
+# Stage 1: Build the application with Maven and JDK 17
+FROM maven:3.8.5-openjdk-17 AS build
 
-# Set working directory
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the built jar file (update the jar name as needed)
-COPY target/scholarship-0.0.1-SNAPSHOT.jar app.jar
+# Copy the project's source code and Maven pom.xml
+COPY pom.xml .
+COPY src ./src
 
-# Expose port (update if your app uses a different port)
+# Build the application, skipping tests to speed up the process
+RUN mvn clean package -DskipTests
+
+# Stage 2: Create the final, lightweight image
+FROM eclipse-temurin:17-jre
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the jar from the build stage to the final image
+# Using a wildcard (*) is more flexible than a hardcoded version
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the application's port
 EXPOSE 8080
 
-# Run the jar
+# Define the command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
