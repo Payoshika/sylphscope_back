@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ProviderRepository extends MongoRepository<Provider, String> {
     Optional<Provider> findByOrganisationName(String organisationName);
     Optional<Provider> findByContactEmail(String contactEmail);
+    Optional<Provider> findByInvitationCode(String invitationCode);
 }
