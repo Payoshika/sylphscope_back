@@ -99,4 +99,21 @@ public class ProviderStaffService {
     public void deleteProviderStaff(String id) {
         providerStaffRepository.deleteById(id);
     }
+
+    public ProviderStaffDto updateProviderStaffRole(String managerId, String targetStaffId, StaffRole newRole) {
+        Optional<ProviderStaff> managerOpt = providerStaffRepository.findById(managerId);
+        if (managerOpt.isEmpty() || managerOpt.get().getRole() != StaffRole.MANAGER) {
+            return null;
+        }
+        Optional<ProviderStaff> targetOpt = providerStaffRepository.findById(targetStaffId);
+        if (targetOpt.isEmpty()) {
+            return null;
+        }
+        ProviderStaff targetStaff = targetOpt.get();
+        targetStaff.setRole(newRole);
+        ProviderStaff updatedStaff = providerStaffRepository.save(targetStaff);
+        ProviderStaffDto dto = new ProviderStaffDto();
+        BeanUtils.copyProperties(updatedStaff, dto);
+        return dto;
+    }
 }

@@ -13,6 +13,8 @@ import com.scholarship.scholarship.dto.ProviderStaffDto;
 import com.scholarship.scholarship.dto.StudentDto;
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramDto;
 import com.scholarship.scholarship.dto.InvitationCodeRequest;
+import com.scholarship.scholarship.dto.SwitchManagerRequest;
+import com.scholarship.scholarship.enums.StaffRole;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.service.ApplicationService;
 import com.scholarship.scholarship.service.GrantProgramService;
@@ -84,6 +86,7 @@ public class ProviderController {
         ProviderDto createdProvider = providerService.createProvider(emptyProvider);
         // Set providerStaff.providerId to createdProvider.id
         providerStaff.setProviderId(createdProvider.getId());
+        providerStaff.setRole(StaffRole.MANAGER);
         providerStaffRepository.save(providerStaff);
         return new ResponseEntity<>(createdProvider, HttpStatus.CREATED);
     }
@@ -205,5 +208,33 @@ public class ProviderController {
         providerStaffDto.setMiddleName(providerStaff.getMiddleName());
         providerStaffDto.setLastName(providerStaff.getLastName());
         return ResponseEntity.ok(providerStaffDto);
+    }
+
+    @PostMapping("/switch-manager")
+    public ResponseEntity<List<ProviderStaffDto>> switchManager(@RequestBody SwitchManagerRequest request) {
+        String managerId = request.getManagerId();
+        String otherStaffId = request.getOtherStaffId();
+        Optional<ProviderStaff> managerOpt = providerStaffRepository.findById(managerId);
+        if (managerOpt.isEmpty() || managerOpt.get().getRole() != StaffRole.MANAGER) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+        Optional<ProviderStaff> otherOpt = providerStaffRepository.findById(otherStaffId);
+        if (otherOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        ProviderStaff manager = managerOpt.get();
+        ProviderStaff otherStaff = otherOpt.get();
+        manager.setRole(StaffRole.ADMINISTRATOR);
+        otherStaff.setRole(StaffRole.MANAGER);
+        providerStaffRepository.save(manager);
+        providerStaffRepository.save(otherStaff);
+        ProviderStaffDto managerDto = new ProviderStaffDto();
+        ProviderStaffDto otherDto = new ProviderStaffDto();
+        org.springframework.beans.BeanUtils.copyProperties(manager, managerDto);
+        org.springframework.beans.BeanUtils.copyProperties(otherStaff, otherDto);
+        List<ProviderStaffDto> result = new java.util.ArrayList<>();
+        result.add(managerDto);
+        result.add(otherDto);
+        return ResponseEntity.ok(result);
     }
 }
