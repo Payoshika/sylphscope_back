@@ -36,4 +36,42 @@ public class EmailService {
             throw new RuntimeException("Error sending MFA email", e);
         }
     }
+
+    public void sendRegistrationConfirmation(String toEmail, String username) {
+        String subject = "Registration Successful";
+        String body = "Hello " + username + ",\n\nYour registration was successful. Welcome!";
+        try {
+            ApiClient client = Postmark.getApiClient(postmarkToken);
+            Message message = new Message(fromEmail, toEmail, subject, body);
+            message.setMessageStream("broadcast");
+            MessageResponse response = client.deliverMessage(message);
+            logger.info("Registration email sent to {} with response: {}", toEmail, response);
+            if (response.getErrorCode() != 0) {
+                throw new RuntimeException("Failed to send email: " + response.getMessage());
+            }
+        } catch (Exception e) {
+            logger.error("Error sending registration email to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Error sending registration email", e);
+        }
+    }
+
+    public void sendApplicationStatusNotification(String toEmail, String applicantName, String status) {
+        String subject = "Application Status Update";
+        String body = "Hello " + applicantName + ",\n\nYour application status is: " + status + ".";
+        try {
+            ApiClient client = Postmark.getApiClient(postmarkToken);
+            Message message = new Message(fromEmail, toEmail, subject, body);
+            message.setMessageStream("broadcast");
+            MessageResponse response = client.deliverMessage(message);
+            logger.info("Status email sent to {} with response: {}", toEmail, response);
+            if (response.getErrorCode() != 0) {
+                throw new RuntimeException("Failed to send email: " + response.getMessage());
+            }
+        } catch (Exception e) {
+            logger.error("Error sending status email to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Error sending status email", e);
+        }
+    }
+
+
 }

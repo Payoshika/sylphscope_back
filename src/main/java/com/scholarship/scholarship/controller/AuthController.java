@@ -6,7 +6,11 @@ import com.scholarship.scholarship.dto.LoginRequest;
 import com.scholarship.scholarship.dto.MessageResponse;
 import com.scholarship.scholarship.dto.SignupRequest;
 import com.scholarship.scholarship.dto.UserDTO;
+import com.scholarship.scholarship.enums.StaffRole;
+import com.scholarship.scholarship.model.ProviderStaff;
+import com.scholarship.scholarship.notification.EmailService;
 import com.scholarship.scholarship.repository.UserRepository;
+import com.scholarship.scholarship.repository.ProviderStaffRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +38,9 @@ public class AuthController {
     private UserRepository userRepository;
 
     @Autowired
+    private ProviderStaffRepository providerStaffRepository;
+
+    @Autowired
     private MfaService mfaService;
 
     @Autowired
@@ -41,6 +48,9 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -69,6 +79,16 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         try {
             UserDTO userDTO = userService.registerNewUser(signupRequest);
+            // If user role is PROVIDER, create and save ProviderStaff
+            System.out.println(userDTO);
+            if (userDTO.getRoles().contains("ROLE_PROVIDER")) {
+                ProviderStaff providerStaff = new ProviderStaff();
+                providerStaff.setUserId(userDTO.getId());
+                providerStaff.setRole(StaffRole.VOLUNTEER);
+                providerStaffRepository.save(providerStaff);
+            }
+            // Send registration confirmation email
+            emailService.sendRegistrationConfirmation(userDTO.getEmail(), userDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED).body(new MessageResponse("User registered successfully!"));
         } catch (RuntimeException e) {
             return ResponseEntity

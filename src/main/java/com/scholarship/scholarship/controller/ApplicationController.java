@@ -1,8 +1,13 @@
 package com.scholarship.scholarship.controller;
 
 import com.scholarship.scholarship.dto.ApplicationDto;
+import com.scholarship.scholarship.dto.StudentDto;
+import com.scholarship.scholarship.dto.UserDTO;
+import com.scholarship.scholarship.model.Student;
 import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramApplicationDto;
-
+import com.scholarship.scholarship.notification.EmailService;
+import com.scholarship.scholarship.service.StudentService;
+import com.scholarship.scholarship.auth.UserService;
 import com.scholarship.scholarship.exception.ResourceNotFoundException;
 import com.scholarship.scholarship.service.ApplicationService;
 import com.scholarship.scholarship.service.GrantProgramService;
@@ -23,6 +28,12 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     private final GrantProgramService grantProgramService;
     private final EvaluationOfAnswerService evaluationOfAnswerService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private StudentService studentService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     public ApplicationController(ApplicationService applicationService,
@@ -158,6 +169,15 @@ public class ApplicationController {
             ApplicationDto application = applicationService.getApplicationById(applicationId);
             application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.SELECTED);
             ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+            // Send email to applicant
+            String studentId = updatedApplication.getStudentId();
+            StudentDto studentDto = studentService.getStudentById(studentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + studentId));
+            String userId = studentDto.getUserId();
+            UserDTO user = userService.getUserById(userId);
+            String email = user.getEmail();
+            String name = user.getUsername();
+            emailService.sendApplicationStatusNotification(email, name, "SELECTED");
             System.out.println("Application " + applicationId + " status updated to SELECTED");
             return ResponseEntity.ok(updatedApplication);
         } catch (ResourceNotFoundException e) {
@@ -188,6 +208,15 @@ public class ApplicationController {
             ApplicationDto application = applicationService.getApplicationById(applicationId);
             application.setStatus(com.scholarship.scholarship.enums.ApplicationStatus.NOT_SELECTED);
             ApplicationDto updatedApplication = applicationService.updateApplication(applicationId, application);
+            // Send email to applicant
+            String studentId = updatedApplication.getStudentId();
+            StudentDto studentDto = studentService.getStudentById(studentId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + studentId));
+            String userId = studentDto.getUserId();
+            UserDTO user = userService.getUserById(userId);
+            String email = user.getEmail();
+            String name = user.getUsername();
+            emailService.sendApplicationStatusNotification(email, name, "NOT_SELECTED");
             System.out.println("Application " + applicationId + " status updated to NOT_SELECTED");
             return ResponseEntity.ok(updatedApplication);
         } catch (ResourceNotFoundException e) {
@@ -214,10 +243,24 @@ public class ApplicationController {
 
     @PutMapping("/{applicationId}/apply-grant")
     public ResponseEntity<ApplicationDto> applyGrant(@PathVariable String applicationId) {
-        ApplicationDto updatedApplication = applicationService.updateApplicationStatus(applicationId, "APPLIED");
-        if (updatedApplication != null) {
-            return ResponseEntity.ok(updatedApplication);
-        } else {
+        try {
+            ApplicationDto updatedApplication = applicationService.updateApplicationStatus(applicationId, "APPLIED");
+            if (updatedApplication != null) {
+                // Get applicant info
+                String studentId = updatedApplication.getStudentId();
+                StudentDto studentDto = studentService.getStudentById(studentId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Student not found: " + studentId));
+                String userId = studentDto.getUserId();
+                UserDTO user = userService.getUserById(userId);
+                String email = user.getEmail();
+                String name = user.getUsername();
+                // Send confirmation email
+                emailService.sendApplicationStatusNotification(email, name, "APPLIED");
+                return ResponseEntity.ok(updatedApplication);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
