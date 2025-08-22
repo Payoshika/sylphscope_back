@@ -360,4 +360,47 @@ public class GrantProgramController {
         GrantProgramDto updatedDto = grantProgramService.updateGrantProgram(grantProgramId, grantProgramDto);
         return ResponseEntity.ok(updatedDto);
     }
+
+    @PostMapping("/duplicate")
+    public ResponseEntity<GrantProgramDto> makeduplicateGrantProgram(
+            @RequestParam String grantProgramId,
+            @RequestParam String providerId,
+            @RequestParam String providerStaffId) {
+
+        // Fetch original grant program
+        GrantProgramDto original = grantProgramService.getGrantProgramById(grantProgramId);
+        if (original == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Fetch provider staff
+        ProviderStaffDto providerStaffDto = grantProgramService.getProviderStaffById(providerStaffId);
+        if (providerStaffDto == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        // Create new GrantProgramDto
+        GrantProgramDto duplicate = GrantProgramDto.builder()
+                .providerId(providerId)
+                .title(original.getTitle() + " (Copy)")
+                .description(original.getDescription())
+                .status(GrantStatus.DRAFT)
+                .schedule(new Schedule()) // default schedule
+                .questionGroupsIds(original.getQuestionGroupsIds())
+                .questionIds(original.getQuestionIds())
+                .selectionCriteria(original.getSelectionCriteria())
+                .evaluationScale(original.getEvaluationScale())
+                .award(original.getAward())
+                .numOfAward(original.getNumOfAward())
+                .contactPerson(providerStaffDto.toProviderStaff())
+                .assignedStaff(List.of(AssignedStaff.builder()
+                        .staffId(providerStaffDto.getId())
+                        .roleOnProgram(com.scholarship.scholarship.enums.StaffRole.MANAGER)
+                        .assignedAt(new Date())
+                        .build()))
+                .build();
+
+        GrantProgramDto created = grantProgramService.createGrantProgram(duplicate);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
 }
