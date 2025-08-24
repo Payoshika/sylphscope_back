@@ -22,6 +22,7 @@ public class EvaluationOfAnswerDto {
     private String questionGroupId;
     private Integer value;
     private EvaluationScale evaluationScale;
+    private String comment;
     private Instant createdAt;
     private Instant updatedAt;
 }

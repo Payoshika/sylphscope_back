@@ -221,7 +221,13 @@ public class StudentAnswerService {
             case EQUALS:
                 if (values == null || values.size() != 1) return false;
                 Object expected = values.get(0);
-                result = compareByType(answer, expected, dataType) == 0;
+                if ("STRING".equals(dataType)) {
+                    Object ansObj = answer.getAnswer().get(0);
+                    result = ansObj != null && expected != null &&
+                            ansObj.toString().toLowerCase().equals(expected.toString().toLowerCase());
+                } else {
+                    result = compareByType(answer, expected, dataType) == 0;
+                }
                 break;
             case IN_LIST:
                 System.out.println("Checking IN_LIST operator");
@@ -229,9 +235,6 @@ public class StudentAnswerService {
                 for (Object ans : answer.getAnswer()) {
                     for (Object value : values) {
                         if (ans instanceof List) {
-                            System.out.println("Checking " + ans + " in list");
-                            // If the value is a list, check if the answer is in that list
-                            // change ans to List
                             List<?> ansList = (List<?>) ans;
                             if (ansList.contains(value)) {
                                 System.out.println("IN_LIST match found in list: " + ansList);
@@ -240,18 +243,16 @@ public class StudentAnswerService {
                             } else {
                                 System.out.println("IN_LIST no match found in list: " + ansList);
                             }
-                        }
-                        //if answer is String
-                        else if (dataType.equals("STRING") && ans instanceof String) {
-                            System.out.println("Checking " + ans + " in " + value);
-                            if (ans.toString().contains(value.toString())) {
+                        } else if ("STRING".equals(dataType) && ans instanceof String) {
+                            if (ans != null && value != null &&
+                                    ans.toString().toLowerCase().contains(value.toString().toLowerCase())) {
                                 System.out.println("IN_LIST match found: " + ans);
                                 result = true;
                                 break;
                             } else {
                                 System.out.println("IN_LIST no match found: " + ans);
                             }
-                        } else if (ans.equals(value)) {
+                        } else if (ans != null && value != null && ans.equals(value)) {
                             System.out.println("IN_LIST match found: " + ans);
                             result = true;
                             break;
@@ -273,20 +274,23 @@ public class StudentAnswerService {
             case NOT_EQUALS:
                 if (values == null || values.size() != 1) return false;
                 Object notExpected = values.get(0);
-                result = compareByType(answer, notExpected, dataType) != 0;
+                if ("STRING".equals(dataType)) {
+                    Object ansObj = answer.getAnswer().get(0);
+                    result = ansObj != null && notExpected != null &&
+                            !ansObj.toString().toLowerCase().equals(notExpected.toString().toLowerCase());
+                } else {
+                    result = compareByType(answer, notExpected, dataType) != 0;
+                }
                 break;
             case CONTAINS:
                 System.out.println("Checking CONTAINS operator");
                 System.out.println("Answer: " + answer.getAnswer());
                 if (values == null || values.isEmpty()) return false;
                 for (Object ans : answer.getAnswer()) {
-                    System.out.println("Checking answer value: " + values);
-                    System.out.println("Answer: " + ans);
-                    System.out.println(values.contains(ans));
-                    if (dataType.equals("STRING")) {
+                    if ("STRING".equals(dataType)) {
                         for (Object v : values) {
-                            // Check if v contains ans as a substring
-                            if (v != null && ans != null && ans.toString().contains(v.toString())) {
+                            if (v != null && ans != null &&
+                                    ans.toString().toLowerCase().contains(v.toString().toLowerCase())) {
                                 System.out.println("contains (STRING) " + ans + " in " + v);
                                 result = true;
                                 break;
@@ -327,13 +331,11 @@ public class StudentAnswerService {
                     Boolean vBool = value instanceof Boolean ? (Boolean) value : Boolean.parseBoolean(value.toString());
                     return aBool.compareTo(vBool);
                 case "DATE":
-                    // Expecting date as Map<String, String> with keys: year, month, day
                     Map<String, String> aDateMap = null;
                     Map<String, String> vDateMap = null;
                     if (answer.getAnswer().get(0) instanceof Map) {
                         aDateMap = (Map<String, String>) answer.getAnswer().get(0);
                     } else if (answer.getAnswer().get(0) instanceof String) {
-                        // Try to parse JSON string to map
                         try {
                             aDateMap = new ObjectMapper().readValue((String) answer.getAnswer().get(0), java.util.Map.class);
                         } catch (Exception e) {
@@ -359,7 +361,10 @@ public class StudentAnswerService {
                     LocalDate aLocalDate = LocalDate.of(aYear, aMonth, aDay);
                     LocalDate vLocalDate = LocalDate.of(vYear, vMonth, vDay);
                     return aLocalDate.compareTo(vLocalDate);
-
+                case "STRING":
+                    String aStr = answer.getAnswer().get(0).toString().toLowerCase();
+                    String vStr = value.toString().toLowerCase();
+                    return aStr.compareTo(vStr);
                 default:
                     return answer.getAnswer().get(0).toString().compareTo(value.toString());
             }
@@ -367,7 +372,6 @@ public class StudentAnswerService {
             return -1;
         }
     }
-
     public void deleteAnswer(String id) {
         studentAnswerRepository.deleteById(id);
     }

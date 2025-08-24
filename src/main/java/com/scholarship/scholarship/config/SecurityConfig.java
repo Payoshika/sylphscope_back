@@ -70,6 +70,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/contact/**").permitAll()
+                        .requestMatchers("/api/questions/**").permitAll()
+                        .requestMatchers("/api/option-sets/**").permitAll()
+                        .requestMatchers("/api/question-groups/**").permitAll()
+                        .requestMatchers("/api/grant-programs/**").permitAll()
                         // Only GET requests for students, all requests for providers
                         .requestMatchers(HttpMethod.GET, "/api/questions/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/questions/**").hasRole("PROVIDER")

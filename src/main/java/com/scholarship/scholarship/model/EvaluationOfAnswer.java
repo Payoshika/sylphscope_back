@@ -42,6 +42,8 @@ public class EvaluationOfAnswer {
 
     private EvaluationScale evaluationScale;
 
+    private String comment;
+
     @CreatedDate
     private Instant createdAt;
 

@@ -73,5 +73,20 @@ public class EmailService {
         }
     }
 
+    public void sendEmail(String toEmail, String subject, String body) {
+        try {
+            ApiClient client = Postmark.getApiClient(postmarkToken);
+            Message message = new Message(fromEmail, toEmail, subject, body);
+            message.setMessageStream("broadcast");
+            MessageResponse response = client.deliverMessage(message);
+            logger.info("Email sent to {} with response: {}", toEmail, response);
+            if (response.getErrorCode() != 0) {
+                throw new RuntimeException("Failed to send email: " + response.getMessage());
+            }
+        } catch (Exception e) {
+            logger.error("Error sending email to {}: {}", toEmail, e.getMessage(), e);
+            throw new RuntimeException("Error sending email", e);
+        }
+    }
 
 }
