@@ -89,6 +89,12 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserDTO getUserById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
+        return userMapper.toDTO(user);
+    }
+
     // Create a new user and return the saved User object
     public User createUser(User user) {
         // Encode password if not already encoded

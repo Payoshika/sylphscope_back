@@ -70,6 +70,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/contact/**").permitAll()
+                        .requestMatchers("/api/questions/**").permitAll()
+                        .requestMatchers("/api/option-sets/**").permitAll()
+                        .requestMatchers("/api/question-groups/**").permitAll()
+                        .requestMatchers("/api/grant-programs/**").permitAll()
                         // Only GET requests for students, all requests for providers
                         .requestMatchers(HttpMethod.GET, "/api/questions/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/questions/**").hasRole("PROVIDER")
@@ -85,8 +90,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/selection-criteria/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/evaluation-of-answers/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/evaluation-of-answers/**").hasRole("PROVIDER")
-                        .requestMatchers("/api/providers/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/providers/**").hasAnyRole("STUDENT", "PROVIDER")
+                        .requestMatchers("/api/providers/**").hasRole("PROVIDER")
                         .requestMatchers("/api/provider-staff/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/applications/**").hasAnyRole("PROVIDER", "STUDENT")
                         .requestMatchers("/api/applications/**").hasAnyRole("PROVIDER", "STUDENT")

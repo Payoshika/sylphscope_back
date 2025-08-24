@@ -2,9 +2,12 @@ package com.scholarship.scholarship.dto;
 import com.scholarship.scholarship.auth.Role;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import lombok.Getter;
+
 import java.util.List;
 
 @Data
+@Getter
 public class UserDTO {
     private String id;
     private String username;
