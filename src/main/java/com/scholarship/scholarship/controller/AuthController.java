@@ -8,9 +8,11 @@ import com.scholarship.scholarship.dto.SignupRequest;
 import com.scholarship.scholarship.dto.UserDTO;
 import com.scholarship.scholarship.enums.StaffRole;
 import com.scholarship.scholarship.model.ProviderStaff;
+import com.scholarship.scholarship.model.Student;
 import com.scholarship.scholarship.notification.EmailService;
 import com.scholarship.scholarship.repository.UserRepository;
 import com.scholarship.scholarship.repository.ProviderStaffRepository;
+import com.scholarship.scholarship.repository.StudentRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,9 @@ public class AuthController {
 
     @Autowired
     private ProviderStaffRepository providerStaffRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private MfaService mfaService;
@@ -86,6 +91,14 @@ public class AuthController {
                 providerStaff.setUserId(userDTO.getId());
                 providerStaff.setRole(StaffRole.VOLUNTEER);
                 providerStaffRepository.save(providerStaff);
+            }
+            // If user role is STUDENT, create and save Student
+            if (userDTO.getRoles().contains("ROLE_STUDENT")) {
+                Student student = new Student();
+                student.setUserId(userDTO.getId());
+                student.setFirstName(userDTO.getUsername());
+                student.setLastName(userDTO.getUsername());
+                studentRepository.save(student);
             }
             // Send registration confirmation email
             emailService.sendRegistrationConfirmation(userDTO.getEmail(), userDTO.getUsername());
