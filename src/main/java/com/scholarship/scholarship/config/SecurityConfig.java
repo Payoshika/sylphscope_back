@@ -82,6 +82,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/option-sets/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/eligibility-criteria/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/eligibility-criteria/**").hasRole("PROVIDER")
+                        .requestMatchers("/api/eligibility-result/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/question-groups/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/question-groups/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/grant-programs/**").hasAnyRole("STUDENT", "PROVIDER")

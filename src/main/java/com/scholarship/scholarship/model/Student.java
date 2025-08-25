@@ -39,7 +39,6 @@ public class Student {
     @Size(max = 30, message = "Last name cannot exceed 100 characters")
     private String lastName;
 
-    @NotNull(message = "Address country is required")
     private Country addressCountry;
 
     @Size(max = 30, message = "State/Province cannot exceed 100 characters")
@@ -51,7 +50,6 @@ public class Student {
     @Size(max = 100, message = "Additional address information cannot exceed 100 characters")
     private String addressElse;
 
-    @NotEmpty(message = "At least one citizenship country is required")
     private Country[] citizenshipCountry;
 
     @Pattern(regexp = "^(https?:\\/\\/)?([\\w\\-])+\\.([\\w\\-\\.]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?$",

@@ -67,9 +67,12 @@ public class EmailService {
             if (response.getErrorCode() != 0) {
                 throw new RuntimeException("Failed to send email: " + response.getMessage());
             }
+        } catch (com.postmarkapp.postmark.client.exception.InvalidMessageException e) {
+            logger.error("Suppressed/inactive email address: {}. Reason: {}", toEmail, e.getMessage());
+            // Optionally notify admin or skip further action
         } catch (Exception e) {
             logger.error("Error sending status email to {}: {}", toEmail, e.getMessage(), e);
-            throw new RuntimeException("Error sending status email", e);
+            // Optionally notify admin or skip further action
         }
     }
 
