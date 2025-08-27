@@ -117,7 +117,10 @@ public class ApplicationController {
             applications.forEach(application -> System.out.println(application));
             System.out.println("First application eligibility status: " + applications.get(0).getEligibilityResult());
         }
-        return ResponseEntity.ok(applications);
+        List<ApplicationDto> filteredApplications = applications.stream()
+                .filter(app -> app.getStatus() != com.scholarship.scholarship.enums.ApplicationStatus.DRAFT)
+                .toList();
+        return ResponseEntity.ok(filteredApplications);
     }
 
     @PostMapping
