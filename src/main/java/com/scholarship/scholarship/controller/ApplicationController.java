@@ -28,20 +28,23 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     private final GrantProgramService grantProgramService;
     private final EvaluationOfAnswerService evaluationOfAnswerService;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private StudentService studentService;
-    @Autowired
-    private UserService userService;
+    private final EmailService emailService;
+    private final StudentService studentService;
+    private final UserService userService;
 
     @Autowired
     public ApplicationController(ApplicationService applicationService,
                                  GrantProgramService grantProgramService,
-                                 EvaluationOfAnswerService evaluationOfAnswerService) {
+                                 EvaluationOfAnswerService evaluationOfAnswerService,
+                                 EmailService emailService,
+                                 StudentService studentService,
+                                 UserService userService) {
         this.applicationService = applicationService;
         this.grantProgramService = grantProgramService;
         this.evaluationOfAnswerService = evaluationOfAnswerService;
+        this.emailService = emailService;
+        this.studentService = studentService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -114,7 +117,10 @@ public class ApplicationController {
             applications.forEach(application -> System.out.println(application));
             System.out.println("First application eligibility status: " + applications.get(0).getEligibilityResult());
         }
-        return ResponseEntity.ok(applications);
+        List<ApplicationDto> filteredApplications = applications.stream()
+                .filter(app -> app.getStatus() != com.scholarship.scholarship.enums.ApplicationStatus.DRAFT)
+                .toList();
+        return ResponseEntity.ok(filteredApplications);
     }
 
     @PostMapping
