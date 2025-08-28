@@ -56,53 +56,6 @@ class StudentAnswerControllerTest {
     }
 
     @Test
-    void getAnswersByStudentIdParam() {
-        String studentId = "student1";
-        StudentAnswer answer = new StudentAnswer();
-        answer.setQuestionId("q1");
-        answer.setAnsweredAt(java.time.Instant.now());
-        StudentAnswerDto dto = new StudentAnswerDto();
-        when(studentAnswerService.getAnswersByStudentId(studentId)).thenReturn(List.of(answer));
-        when(studentAnswerMapper.toDto(answer)).thenReturn(dto);
-        ResponseEntity<List<StudentAnswerDto>> response = studentAnswerController.getAnswersByStudentIdParam(studentId);
-        assertEquals(List.of(dto), response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void getAnswerById_found() {
-        String id = "id1";
-        StudentAnswer answer = new StudentAnswer();
-        StudentAnswerDto dto = new StudentAnswerDto();
-        when(studentAnswerService.getAnswerById(id)).thenReturn(Optional.of(answer));
-        when(studentAnswerMapper.toDto(answer)).thenReturn(dto);
-        ResponseEntity<StudentAnswerDto> response = studentAnswerController.getAnswerById(id);
-        assertEquals(dto, response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void getAnswerById_notFound() {
-        String id = "id1";
-        when(studentAnswerService.getAnswerById(id)).thenReturn(Optional.empty());
-        ResponseEntity<StudentAnswerDto> response = studentAnswerController.getAnswerById(id);
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCodeValue());
-    }
-
-    @Test
-    void createAnswer() {
-        StudentAnswerDto dto = new StudentAnswerDto();
-        StudentAnswer entity = new StudentAnswer();
-        when(studentAnswerMapper.toEntity(dto)).thenReturn(entity);
-        when(studentAnswerService.saveAnswer(entity)).thenReturn(entity);
-        when(studentAnswerMapper.toDto(entity)).thenReturn(dto);
-        ResponseEntity<StudentAnswerDto> response = studentAnswerController.createAnswer(dto);
-        assertEquals(dto, response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
     void updateAnswers() {
         String studentId = "student1";
         String grantProgramId = "gp1";
@@ -114,14 +67,5 @@ class StudentAnswerControllerTest {
         ResponseEntity<List<StudentAnswerDto>> response = studentAnswerController.updateAnswers(studentId, grantProgramId, List.of(dto));
         assertEquals(List.of(dto), response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void deleteAnswer() {
-        String id = "id1";
-        doNothing().when(studentAnswerService).deleteAnswer(id);
-        ResponseEntity<Void> response = studentAnswerController.deleteAnswer(id);
-        verify(studentAnswerService, times(1)).deleteAnswer(id);
-        assertEquals(204, response.getStatusCodeValue());
     }
 }

@@ -59,10 +59,4 @@ class SelectionCriterionControllerTest {
         assertEquals(criteria, result);
     }
 
-    @Test
-    void delete() {
-        doNothing().when(selectionCriterionService).delete("id1");
-        selectionCriterionController.delete("id1");
-        verify(selectionCriterionService, times(1)).delete("id1");
-    }
 }

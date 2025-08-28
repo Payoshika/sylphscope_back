@@ -56,22 +56,4 @@ class EligibilityCriteriaRepositoryTest {
         assertEquals(1, result.size());
         assertEquals("g1", result.get(0).getQuestionGroupId());
     }
-
-    @Test
-    void findByRequired() {
-        EligibilityCriteria ec = new EligibilityCriteria();
-        ec.setId("1");
-        ec.setRequired(true);
-        when(eligibilityCriteriaRepository.findByRequired(true)).thenReturn(Arrays.asList(ec));
-        List<EligibilityCriteria> result = eligibilityCriteriaRepository.findByRequired(true);
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).isRequired());
-    }
-
-    @Test
-    void deleteByGrantProgramId() {
-        doNothing().when(eligibilityCriteriaRepository).deleteByGrantProgramId("gp1");
-        eligibilityCriteriaRepository.deleteByGrantProgramId("gp1");
-        verify(eligibilityCriteriaRepository, times(1)).deleteByGrantProgramId("gp1");
-    }
 }

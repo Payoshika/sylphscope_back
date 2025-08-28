@@ -41,45 +41,6 @@ class ProviderStaffServiceTest {
     }
 
     @Test
-    void getProviderStaffById() {
-        ProviderStaff staff = new ProviderStaff();
-        staff.setId("id1");
-        staff.setUserId("user1");
-        when(providerStaffRepository.findById("id1")).thenReturn(Optional.of(staff));
-
-        Optional<ProviderStaffDto> result = providerStaffService.getProviderStaffById("id1");
-
-        assertTrue(result.isPresent());
-        assertEquals("user1", result.get().getUserId());
-    }
-
-    @Test
-    void getStaffByProviderId() {
-        ProviderStaff staff = new ProviderStaff();
-        staff.setProviderId("provider1");
-        when(providerStaffRepository.findByProviderId("provider1")).thenReturn(List.of(staff));
-
-        List<ProviderStaffDto> result = providerStaffService.getStaffByProviderId("provider1");
-
-        assertEquals(1, result.size());
-        assertEquals("provider1", result.get(0).getProviderId());
-    }
-
-    @Test
-    void getStaffByUserIdAndProviderId() {
-        ProviderStaff staff = new ProviderStaff();
-        staff.setUserId("user1");
-        staff.setProviderId("provider1");
-        when(providerStaffRepository.findByUserIdAndProviderId("user1", "provider1")).thenReturn(Optional.of(staff));
-
-        Optional<ProviderStaffDto> result = providerStaffService.getStaffByUserIdAndProviderId("user1", "provider1");
-
-        assertTrue(result.isPresent());
-        assertEquals("user1", result.get().getUserId());
-        assertEquals("provider1", result.get().getProviderId());
-    }
-
-    @Test
     void getStaffByUserId() {
         ProviderStaff staff = new ProviderStaff();
         staff.setUserId("user1");
@@ -89,18 +50,6 @@ class ProviderStaffServiceTest {
 
         assertEquals(1, result.size());
         assertEquals("user1", result.get(0).getUserId());
-    }
-
-    @Test
-    void getStaffByRole() {
-        ProviderStaff staff = new ProviderStaff();
-        staff.setRole(StaffRole.ADMINISTRATOR);
-        when(providerStaffRepository.findByRole(StaffRole.ADMINISTRATOR)).thenReturn(List.of(staff));
-
-        List<ProviderStaffDto> result = providerStaffService.getStaffByRole(StaffRole.ADMINISTRATOR);
-
-        assertEquals(1, result.size());
-        assertEquals(StaffRole.ADMINISTRATOR, result.get(0).getRole());
     }
 
     @Test

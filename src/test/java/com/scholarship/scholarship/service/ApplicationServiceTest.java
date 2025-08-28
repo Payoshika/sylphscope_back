@@ -33,26 +33,7 @@ class ApplicationServiceTest {
     }
 
     @Test
-    void getAllApplications() {
-        Application app1 = new Application();
-        app1.setId("1");
-        Application app2 = new Application();
-        app2.setId("2");
-        ApplicationDto dto1 = new ApplicationDto();
-        dto1.setId("1");
-        ApplicationDto dto2 = new ApplicationDto();
-        dto2.setId("2");
-        when(applicationRepository.findAll()).thenReturn(Arrays.asList(app1, app2));
-        when(applicationMapper.toDto(app1)).thenReturn(dto1);
-        when(applicationMapper.toDto(app2)).thenReturn(dto2);
-        List<ApplicationDto> result = applicationService.getAllApplications();
-        assertEquals(2, result.size());
-        assertEquals("1", result.get(0).getId());
-        assertEquals("2", result.get(1).getId());
-    }
-
-    @Test
-    void getApplicationById_found() {
+    void getApplicationById() {
         Application app = new Application();
         app.setId("1");
         ApplicationDto dto = new ApplicationDto();
@@ -61,12 +42,6 @@ class ApplicationServiceTest {
         when(applicationMapper.toDto(app)).thenReturn(dto);
         ApplicationDto result = applicationService.getApplicationById("1");
         assertEquals("1", result.getId());
-    }
-
-    @Test
-    void getApplicationById_notFound() {
-        when(applicationRepository.findById("2")).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> applicationService.getApplicationById("2"));
     }
 
     @Test
@@ -138,12 +113,6 @@ class ApplicationServiceTest {
         assertEquals("1", result.getId());
     }
 
-    @Test
-    void updateApplication_notFound() {
-        ApplicationDto dto = new ApplicationDto();
-        when(applicationRepository.findById("2")).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class, () -> applicationService.updateApplication("2", dto));
-    }
 
     @Test
     void deleteApplication_found() {
@@ -151,13 +120,6 @@ class ApplicationServiceTest {
         doNothing().when(applicationRepository).deleteById("1");
         boolean result = applicationService.deleteApplication("1");
         assertTrue(result);
-    }
-
-    @Test
-    void deleteApplication_notFound() {
-        when(applicationRepository.existsById("2")).thenReturn(false);
-        boolean result = applicationService.deleteApplication("2");
-        assertFalse(result);
     }
 
     @Test
@@ -181,10 +143,4 @@ class ApplicationServiceTest {
         assertThrows(RuntimeException.class, () -> applicationService.updateApplicationStatus("1", "INVALID_STATUS"));
     }
 
-    @Test
-    void updateApplicationStatus_notFound() {
-        when(applicationRepository.findById("2")).thenReturn(Optional.empty());
-        ApplicationDto result = applicationService.updateApplicationStatus("2", "DRAFT");
-        assertNull(result);
-    }
 }

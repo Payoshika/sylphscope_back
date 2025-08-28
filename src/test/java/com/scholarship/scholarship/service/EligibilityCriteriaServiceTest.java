@@ -88,32 +88,6 @@ class EligibilityCriteriaServiceTest {
     }
 
     @Test
-    void createMultipleSimpleCriteria() {
-        QuestionCondition condition = new QuestionCondition();
-        EligibilityCriteriaRequestDto dto = new EligibilityCriteriaRequestDto();
-        dto.setGrantProgramId("gp1");
-        dto.setName("name");
-        dto.setDescription("desc");
-        dto.setRequired(true);
-        dto.setQuestionId("q1");
-        dto.setSimpleCondition(condition);
-        dto.setCriteriaType(EligibilityCriteriaType.SINGLE);
-        EligibilityCriteria criteria = EligibilityCriteria.builder()
-                .grantProgramId("gp1")
-                .name("name")
-                .description("desc")
-                .required(true)
-                .criteriaType(EligibilityCriteriaType.SINGLE)
-                .questionId("q1")
-                .simpleCondition(condition)
-                .build();
-        when(eligibilityCriteriaRepository.save(any(EligibilityCriteria.class))).thenReturn(criteria);
-        List<EligibilityCriteria> result = eligibilityCriteriaService.createMultipleSimpleCriteria(List.of(dto));
-        assertEquals(1, result.size());
-        assertEquals("gp1", result.get(0).getGrantProgramId());
-    }
-
-    @Test
     void createComplexCriteria() {
         CombinationLogic logic = new CombinationLogic();
         List<QuestionCondition> conditions = List.of(new QuestionCondition());

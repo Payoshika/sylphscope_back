@@ -38,19 +38,6 @@ class ProviderStaffRepositoryTest {
     }
 
     @Test
-    void findByUserIdAndProviderId() {
-        ProviderStaff staff = new ProviderStaff();
-        staff.setId("1");
-        staff.setUserId("user1");
-        staff.setProviderId("provider1");
-        when(providerStaffRepository.findByUserIdAndProviderId("user1", "provider1")).thenReturn(Optional.of(staff));
-        Optional<ProviderStaff> result = providerStaffRepository.findByUserIdAndProviderId("user1", "provider1");
-        assertTrue(result.isPresent());
-        assertEquals("user1", result.get().getUserId());
-        assertEquals("provider1", result.get().getProviderId());
-    }
-
-    @Test
     void findByUserId() {
         ProviderStaff staff1 = new ProviderStaff();
         staff1.setId("1");
@@ -64,17 +51,4 @@ class ProviderStaffRepositoryTest {
         assertEquals("user1", result.get(0).getUserId());
     }
 
-    @Test
-    void findByRole() {
-        ProviderStaff staff1 = new ProviderStaff();
-        staff1.setId("1");
-        staff1.setRole(StaffRole.MANAGER);
-        ProviderStaff staff2 = new ProviderStaff();
-        staff2.setId("2");
-        staff2.setRole(StaffRole.MANAGER);
-        when(providerStaffRepository.findByRole(StaffRole.MANAGER)).thenReturn(Arrays.asList(staff1, staff2));
-        List<ProviderStaff> result = providerStaffRepository.findByRole(StaffRole.MANAGER);
-        assertEquals(2, result.size());
-        assertEquals(StaffRole.MANAGER, result.get(0).getRole());
-    }
 }

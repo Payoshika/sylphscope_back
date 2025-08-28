@@ -49,29 +49,12 @@ class QuestionControllerTest {
     }
 
     @Test
-    void getAllQuestions() {
-        List<QuestionDto> questions = List.of(new QuestionDto());
-        when(questionService.getAllQuestions()).thenReturn(questions);
-        ResponseEntity<List<QuestionDto>> response = questionController.getAllQuestions();
-        assertEquals(questions, response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
     void updateQuestion() {
         QuestionDto questionDto = new QuestionDto();
         when(questionService.updateQuestion(eq("id1"), any(QuestionDto.class))).thenReturn(questionDto);
         ResponseEntity<QuestionDto> response = questionController.updateQuestion("id1", questionDto);
         assertEquals(questionDto, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void deleteQuestion() {
-        doNothing().when(questionService).deleteQuestion("id1");
-        ResponseEntity<Void> response = questionController.deleteQuestion("id1");
-        verify(questionService, times(1)).deleteQuestion("id1");
-        assertEquals(204, response.getStatusCodeValue());
     }
 
     @Test

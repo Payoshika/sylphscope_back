@@ -40,10 +40,6 @@ class GrantProgramRepositoryTest {
     }
 
     @Test
-    void testFindByProviderId() {
-    }
-
-    @Test
     void findByTitleContainingIgnoreCase() {
         GrantProgram gp1 = new GrantProgram();
         gp1.setId("1");

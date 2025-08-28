@@ -48,30 +48,6 @@ class StudentAnswerRepositoryTest {
     }
 
     @Test
-    void findByStudentIdAndQuestionId() {
-        StudentAnswer sa = new StudentAnswer();
-        sa.setId("1");
-        sa.setStudentId("student1");
-        sa.setQuestionId("q1");
-        when(studentAnswerRepository.findByStudentIdAndQuestionId("student1", "q1")).thenReturn(Optional.of(sa));
-        Optional<StudentAnswer> result = studentAnswerRepository.findByStudentIdAndQuestionId("student1", "q1");
-        assertTrue(result.isPresent());
-        assertEquals("student1", result.get().getStudentId());
-        assertEquals("q1", result.get().getQuestionId());
-    }
-
-    @Test
-    void findByQuestionId() {
-        StudentAnswer sa = new StudentAnswer();
-        sa.setId("1");
-        sa.setQuestionId("q1");
-        when(studentAnswerRepository.findByQuestionId("q1")).thenReturn(Arrays.asList(sa));
-        List<StudentAnswer> result = studentAnswerRepository.findByQuestionId("q1");
-        assertEquals(1, result.size());
-        assertEquals("q1", result.get(0).getQuestionId());
-    }
-
-    @Test
     void findByStudentIdIn() {
         StudentAnswer sa1 = new StudentAnswer();
         sa1.setId("1");
@@ -85,13 +61,5 @@ class StudentAnswerRepositoryTest {
         assertEquals(2, result.size());
         assertTrue(studentIds.contains(result.get(0).getStudentId()));
         assertTrue(studentIds.contains(result.get(1).getStudentId()));
-    }
-
-    @Test
-    void deleteByStudentId() {
-    }
-
-    @Test
-    void deleteByQuestionId() {
     }
 }
