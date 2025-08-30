@@ -23,8 +23,6 @@ public class CorsConfig {
 
         // Allow all methods
         config.addAllowedMethod("*");
-        // Allow all headers
-        config.addAllowedHeader("*");
 
         config.setAllowCredentials(true);
 
