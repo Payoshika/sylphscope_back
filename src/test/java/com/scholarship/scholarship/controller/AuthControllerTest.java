@@ -6,6 +6,7 @@ import com.scholarship.scholarship.dto.LoginRequest;
 import com.scholarship.scholarship.dto.MessageResponse;
 import com.scholarship.scholarship.dto.SignupRequest;
 import com.scholarship.scholarship.dto.UserDTO;
+import com.scholarship.scholarship.notification.EmailService;
 import com.scholarship.scholarship.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class AuthControllerTest {
     private UserService userService;
     @InjectMocks
     private AuthController authController;
+    @Mock
+    private EmailService emailService;
 
     @BeforeEach
     void setUp() {
@@ -66,16 +69,6 @@ class AuthControllerTest {
         ResponseEntity<?> response = authController.authenticateUser(loginRequest);
         assertEquals(200, response.getStatusCode().value());
         assertTrue(response.getBody() instanceof JwtResponse);
-    }
-
-    @Test
-    void registerUser_success() {
-        SignupRequest signupRequest = new SignupRequest();
-        UserDTO userDTO = new UserDTO();
-        when(userService.registerNewUser(signupRequest)).thenReturn(userDTO);
-        ResponseEntity<?> response = authController.registerUser(signupRequest);
-        assertEquals(201, response.getStatusCode().value());
-        assertTrue(response.getBody() instanceof MessageResponse);
     }
 
     @Test

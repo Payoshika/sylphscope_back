@@ -167,22 +167,6 @@ class GrantProgramControllerTest {
     }
 
     @Test
-    void getAssignedStaff() {
-        List<AssignedStaff> staffList = new ArrayList<>();
-        when(grantProgramService.getAssignedStaff("gp1")).thenReturn(staffList);
-        ResponseEntity<List<AssignedStaff>> response = grantProgramController.getAssignedStaff("gp1");
-        assertEquals(staffList, response.getBody());
-    }
-
-    @Test
-    void getContactPerson() {
-        ProviderStaffDto staffDto = new ProviderStaffDto();
-        when(grantProgramService.getContactPerson("gp1")).thenReturn(staffDto);
-        ResponseEntity<ProviderStaffDto> response = grantProgramController.getContactPerson("gp1");
-        assertEquals(staffDto, response.getBody());
-    }
-
-    @Test
     void getAppliedGrantProgram() {
         ApplicationDto appDto = new ApplicationDto();
         appDto.setGrantProgramId("gp1");

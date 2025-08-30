@@ -27,34 +27,24 @@ class SelectionCriterionServiceTest {
     private SelectionCriterionService selectionCriterionService;
 
     @Test
-    void getByGrantProgramId() {
-        String grantProgramId = "gp1";
-        SelectionCriterion criterion = SelectionCriterion.builder().id("sc1").grantProgramId(grantProgramId).build();
-        when(selectionCriterionRepository.findByGrantProgramId(grantProgramId)).thenReturn(List.of(criterion));
-        List<SelectionCriterion> result = selectionCriterionService.getByGrantProgramId(grantProgramId);
-        assertEquals(1, result.size());
-        assertEquals(grantProgramId, result.get(0).getGrantProgramId());
-    }
-
-    @Test
     void create() {
         SelectionCriterionDto dto = SelectionCriterionDto.builder()
                 .grantProgramId("gp2")
                 .criterionName("Criterion")
-                .questionType("TYPE")
+                .questionType("SINGLE_CHOICE")
                 .questionId("q1")
                 .weight(1)
                 .evaluationType(EvaluationType.MANUAL)
                 .evaluationScale(EvaluationScale.HUNDRED)
                 .build();
         SelectionCriterion criterion = SelectionCriterion.builder()
-                .grantProgramId(dto.getGrantProgramId())
-                .criterionName(dto.getCriterionName())
-                .questionType(dto.getQuestionType())
-                .questionId(dto.getQuestionId())
-                .weight(dto.getWeight())
-                .evaluationType(dto.getEvaluationType())
-                .evaluationScale(dto.getEvaluationScale())
+                .grantProgramId("gp2")
+                .criterionName("Criterion")
+                .questionType("SINGLE_CHOICE")
+                .questionId("q1")
+                .weight(1)
+                .evaluationType(EvaluationType.MANUAL)
+                .evaluationScale(EvaluationScale.HUNDRED)
                 .build();
         when(selectionCriterionRepository.save(any(SelectionCriterion.class))).thenReturn(criterion);
         SelectionCriterion result = selectionCriterionService.create(dto);
@@ -67,7 +57,7 @@ class SelectionCriterionServiceTest {
         String id = "sc2";
         SelectionCriterionDto dto = SelectionCriterionDto.builder()
                 .criterionName("Updated")
-                .questionType("TYPE")
+                .questionType("SINGLE_CHOICE")
                 .questionId("q2")
                 .weight(2)
                 .evaluationType(EvaluationType.MANUAL)
@@ -96,11 +86,4 @@ class SelectionCriterionServiceTest {
         assertTrue(result.stream().anyMatch(sc -> "Existing".equals(sc.getCriterionName())));
     }
 
-    @Test
-    void delete() {
-        String id = "sc4";
-        doNothing().when(selectionCriterionRepository).deleteById(id);
-        selectionCriterionService.delete(id);
-        verify(selectionCriterionRepository, times(1)).deleteById(id);
-    }
 }

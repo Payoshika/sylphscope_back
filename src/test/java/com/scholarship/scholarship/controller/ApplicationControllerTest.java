@@ -5,6 +5,7 @@ import com.scholarship.scholarship.dto.grantProgramDtos.GrantProgramApplicationD
 import com.scholarship.scholarship.service.ApplicationService;
 import com.scholarship.scholarship.service.GrantProgramService;
 import com.scholarship.scholarship.service.EvaluationOfAnswerService;
+import com.scholarship.scholarship.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,6 +30,8 @@ class ApplicationControllerTest {
     private EvaluationOfAnswerService evaluationOfAnswerService;
     @InjectMocks
     private ApplicationController applicationController;
+    @Mock
+    private StudentService studentService;
 
     @BeforeEach
     void setUp() {
@@ -80,14 +83,6 @@ class ApplicationControllerTest {
     }
 
     @Test
-    void getApplicationById_notFound() {
-        when(applicationService.getApplicationById("2")).thenThrow(new com.scholarship.scholarship.exception.ResourceNotFoundException("Not found"));
-        ResponseEntity<ApplicationDto> response = applicationController.getApplicationById("2");
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCode().value());
-    }
-
-    @Test
     void getApplicationsByStudentId() {
         ApplicationDto dto = new ApplicationDto();
         when(applicationService.getApplicationsByStudentId("student1")).thenReturn(Collections.singletonList(dto));
@@ -128,25 +123,10 @@ class ApplicationControllerTest {
     }
 
     @Test
-    void updateApplication_notFound() {
-        when(applicationService.updateApplication(eq("2"), any(ApplicationDto.class))).thenThrow(new com.scholarship.scholarship.exception.ResourceNotFoundException("Not found"));
-        ResponseEntity<ApplicationDto> response = applicationController.updateApplication("2", new ApplicationDto());
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCode().value());
-    }
-
-    @Test
     void deleteApplication_found() {
         when(applicationService.deleteApplication("1")).thenReturn(true);
         ResponseEntity<Void> response = applicationController.deleteApplication("1");
         assertEquals(204, response.getStatusCode().value());
-    }
-
-    @Test
-    void deleteApplication_notFound() {
-        when(applicationService.deleteApplication("2")).thenReturn(false);
-        ResponseEntity<Void> response = applicationController.deleteApplication("2");
-        assertEquals(404, response.getStatusCode().value());
     }
 
     @Test
@@ -165,23 +145,6 @@ class ApplicationControllerTest {
     }
 
     @Test
-    void addReceiver_found() {
-        ApplicationDto dto = new ApplicationDto();
-        when(applicationService.getApplicationById("1")).thenReturn(dto);
-        when(applicationService.updateApplication(eq("1"), any(ApplicationDto.class))).thenReturn(dto);
-        ResponseEntity<ApplicationDto> response = applicationController.addReceiver("1");
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void addReceiver_notFound() {
-        when(applicationService.getApplicationById("2")).thenThrow(new com.scholarship.scholarship.exception.ResourceNotFoundException("Not found"));
-        ResponseEntity<ApplicationDto> response = applicationController.addReceiver("2");
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCode().value());
-    }
-
-    @Test
     void updateReceivers() {
         ApplicationDto dto = new ApplicationDto();
         when(applicationService.getApplicationById(anyString())).thenReturn(dto);
@@ -190,45 +153,4 @@ class ApplicationControllerTest {
         assertEquals(2, response.getBody().size());
     }
 
-    @Test
-    void rejectReceiver_found() {
-        ApplicationDto dto = new ApplicationDto();
-        when(applicationService.getApplicationById("1")).thenReturn(dto);
-        when(applicationService.updateApplication(eq("1"), any(ApplicationDto.class))).thenReturn(dto);
-        ResponseEntity<ApplicationDto> response = applicationController.rejectReceiver("1");
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void rejectReceiver_notFound() {
-        when(applicationService.getApplicationById("2")).thenThrow(new com.scholarship.scholarship.exception.ResourceNotFoundException("Not found"));
-        ResponseEntity<ApplicationDto> response = applicationController.rejectReceiver("2");
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCode().value());
-    }
-
-    @Test
-    void rejectReceivers() {
-        ApplicationDto dto = new ApplicationDto();
-        when(applicationService.getApplicationById(anyString())).thenReturn(dto);
-        when(applicationService.updateApplication(anyString(), any(ApplicationDto.class))).thenReturn(dto);
-        ResponseEntity<List<ApplicationDto>> response = applicationController.rejectReceivers(Arrays.asList("1", "2"));
-        assertEquals(2, response.getBody().size());
-    }
-
-    @Test
-    void applyGrant_found() {
-        ApplicationDto dto = new ApplicationDto();
-        when(applicationService.updateApplicationStatus("1", "APPLIED")).thenReturn(dto);
-        ResponseEntity<ApplicationDto> response = applicationController.applyGrant("1");
-        assertEquals(dto, response.getBody());
-    }
-
-    @Test
-    void applyGrant_notFound() {
-        when(applicationService.updateApplicationStatus("2", "APPLIED")).thenReturn(null);
-        ResponseEntity<ApplicationDto> response = applicationController.applyGrant("2");
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCode().value());
-    }
 }

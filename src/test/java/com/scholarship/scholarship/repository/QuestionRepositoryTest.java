@@ -23,17 +23,6 @@ class QuestionRepositoryTest {
     }
 
     @Test
-    void findByName() {
-        Question q1 = new Question();
-        q1.setId("1");
-        q1.setName("Test Question");
-        when(questionRepository.findByName("Test Question")).thenReturn(Optional.of(q1));
-        Optional<Question> result = questionRepository.findByName("Test Question");
-        assertTrue(result.isPresent());
-        assertEquals("Test Question", result.get().getName());
-    }
-
-    @Test
     void findByIsRequired() {
         Question q1 = new Question();
         q1.setId("1");

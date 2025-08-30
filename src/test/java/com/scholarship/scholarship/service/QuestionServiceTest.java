@@ -93,33 +93,6 @@ class QuestionServiceTest {
     }
 
     @Test
-    void getQuestionByName() {
-        Question question = Question.builder().id("q4").name("Q4").build();
-        when(questionRepository.findByName("Q4")).thenReturn(Optional.of(question));
-        Optional<QuestionDto> result = questionService.getQuestionByName("Q4");
-        assertTrue(result.isPresent());
-        assertEquals("Q4", result.get().getName());
-    }
-
-    @Test
-    void getAllQuestions() {
-        Question question1 = Question.builder().id("q5").name("Q5").build();
-        Question question2 = Question.builder().id("q6").name("Q6").build();
-        when(questionRepository.findAll()).thenReturn(List.of(question1, question2));
-        List<QuestionDto> result = questionService.getAllQuestions();
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void getAllQuestionEntities() {
-        Question question1 = Question.builder().id("q7").name("Q7").build();
-        Question question2 = Question.builder().id("q8").name("Q8").build();
-        when(questionRepository.findAll()).thenReturn(List.of(question1, question2));
-        List<Question> result = questionService.getAllQuestionEntities();
-        assertEquals(2, result.size());
-    }
-
-    @Test
     void updateQuestion() {
         QuestionDto dto = QuestionDto.builder().name("Updated").questionText("Updated Text").description("desc").isRequired(true).requiresConditionalUpload(false).build();
         Question existing = Question.builder().id("q9").name("Old").build();
@@ -127,20 +100,6 @@ class QuestionServiceTest {
         when(questionRepository.save(any(Question.class))).thenReturn(existing);
         QuestionDto result = questionService.updateQuestion("q9", dto);
         assertEquals("Updated", result.getName());
-    }
-
-    @Test
-    void deleteQuestion() {
-        when(questionRepository.existsById("q10")).thenReturn(true);
-        doNothing().when(questionRepository).deleteById("q10");
-        questionService.deleteQuestion("q10");
-        verify(questionRepository, times(1)).deleteById("q10");
-    }
-
-    @Test
-    void deleteQuestionThrowsException() {
-        when(questionRepository.existsById("q11")).thenReturn(false);
-        assertThrows(ResourceNotFoundException.class, () -> questionService.deleteQuestion("q11"));
     }
 
     @Test

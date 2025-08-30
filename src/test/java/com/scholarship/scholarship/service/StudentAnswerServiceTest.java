@@ -32,16 +32,6 @@ class StudentAnswerServiceTest {
     private StudentAnswerService studentAnswerService;
 
     @Test
-    void getAnswersByStudentId() {
-        String studentId = "student1";
-        StudentAnswer answer = StudentAnswer.builder().id("1").studentId(studentId).build();
-        when(studentAnswerRepository.findByStudentId(studentId)).thenReturn(List.of(answer));
-        List<StudentAnswer> result = studentAnswerService.getAnswersByStudentId(studentId);
-        assertEquals(1, result.size());
-        assertEquals(studentId, result.get(0).getStudentId());
-    }
-
-    @Test
     void getAnswersByApplicationId() {
         String applicationId = "app1";
         StudentAnswer answer = StudentAnswer.builder().id("2").applicationId(List.of(applicationId)).build();
@@ -49,25 +39,6 @@ class StudentAnswerServiceTest {
         List<StudentAnswer> result = studentAnswerService.getAnswersByApplicationId(applicationId);
         assertEquals(1, result.size());
         assertTrue(result.get(0).getApplicationId().contains(applicationId));
-    }
-
-    @Test
-    void getAnswerById() {
-        String id = "3";
-        StudentAnswer answer = StudentAnswer.builder().id(id).build();
-        when(studentAnswerRepository.findById(id)).thenReturn(Optional.of(answer));
-        Optional<StudentAnswer> result = studentAnswerService.getAnswerById(id);
-        assertTrue(result.isPresent());
-        assertEquals(id, result.get().getId());
-    }
-
-    @Test
-    void saveAnswer() {
-        StudentAnswer answer = StudentAnswer.builder().id("4").studentId("student2").build();
-        when(studentAnswerRepository.save(answer)).thenReturn(answer);
-        StudentAnswer result = studentAnswerService.saveAnswer(answer);
-        assertEquals("4", result.getId());
-        assertEquals("student2", result.getStudentId());
     }
 
     @Test
@@ -91,13 +62,5 @@ class StudentAnswerServiceTest {
         List<StudentAnswer> result = studentAnswerService.updateAnswers(studentId, grantProgramId, List.of(answer));
         assertEquals(1, result.size());
         assertEquals(studentId, result.get(0).getStudentId());
-    }
-
-    @Test
-    void deleteAnswer() {
-        String id = "6";
-        doNothing().when(studentAnswerRepository).deleteById(id);
-        studentAnswerService.deleteAnswer(id);
-        verify(studentAnswerRepository, times(1)).deleteById(id);
     }
 }

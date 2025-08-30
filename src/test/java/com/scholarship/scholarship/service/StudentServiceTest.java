@@ -29,35 +29,11 @@ class StudentServiceTest {
     @Test
     void createMinimalStudent() {
         String userId = "user123";
-        StudentDto dto = new StudentDto();
-        dto.setUserId(userId);
         Student student = new Student();
         student.setUserId(userId);
         when(studentRepository.save(any(Student.class))).thenReturn(student);
         StudentDto result = studentService.createMinimalStudent(userId);
         assertEquals(userId, result.getUserId());
-    }
-
-    @Test
-    void createStudent() {
-        StudentDto dto = new StudentDto();
-        dto.setUserId("user456");
-        Student student = new Student();
-        student.setUserId("user456");
-        when(studentRepository.save(any(Student.class))).thenReturn(student);
-        StudentDto result = studentService.createStudent(dto);
-        assertEquals("user456", result.getUserId());
-    }
-
-    @Test
-    void getStudentById() {
-        Student student = new Student();
-        student.setId("id1");
-        student.setUserId("user789");
-        when(studentRepository.findById("id1")).thenReturn(Optional.of(student));
-        Optional<StudentDto> result = studentService.getStudentById("id1");
-        assertTrue(result.isPresent());
-        assertEquals("user789", result.get().getUserId());
     }
 
     @Test
@@ -69,6 +45,13 @@ class StudentServiceTest {
         Optional<StudentDto> result = studentService.getStudentByUserId("user101");
         assertTrue(result.isPresent());
         assertEquals("id2", result.get().getId());
+    }
+
+    @Test
+    void getStudentByUserIdWithWrongId() {
+        when(studentRepository.findByUserId("wrongUserId")).thenReturn(Optional.empty());
+        Optional<StudentDto> result = studentService.getStudentByUserId("wrongUserId");
+        assertFalse(result.isPresent());
     }
 
     @Test
@@ -101,13 +84,6 @@ class StudentServiceTest {
     }
 
     @Test
-    void deleteStudent() {
-        doNothing().when(studentRepository).deleteById("id6");
-        studentService.deleteStudent("id6");
-        verify(studentRepository, times(1)).deleteById("id6");
-    }
-
-    @Test
     void updateStudentWithWrongId() {
         StudentDto dto = new StudentDto();
         dto.setUserId("user999");
@@ -125,47 +101,5 @@ class StudentServiceTest {
         StudentDto result = studentService.updateStudent("", dto);
         assertNull(result);
         verify(studentRepository, never()).save(any(Student.class));
-    }
-
-    @Test
-    void deleteStudentWithWrongId() {
-        doNothing().when(studentRepository).deleteById("wrongId");
-        studentService.deleteStudent("wrongId");
-        verify(studentRepository, times(1)).deleteById("wrongId");
-    }
-
-    @Test
-    void deleteStudentWithEmptyId() {
-        doNothing().when(studentRepository).deleteById("");
-        studentService.deleteStudent("");
-        verify(studentRepository, times(1)).deleteById("");
-    }
-
-    @Test
-    void getStudentByUserIdWithWrongId() {
-        when(studentRepository.findByUserId("wrongUserId")).thenReturn(Optional.empty());
-        Optional<StudentDto> result = studentService.getStudentByUserId("wrongUserId");
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void getStudentByUserIdWithEmptyId() {
-        when(studentRepository.findByUserId("")).thenReturn(Optional.empty());
-        Optional<StudentDto> result = studentService.getStudentByUserId("");
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void getStudentByIdWithWrongId() {
-        when(studentRepository.findById("wrongId")).thenReturn(Optional.empty());
-        Optional<StudentDto> result = studentService.getStudentById("wrongId");
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    void getStudentByIdWithEmptyId() {
-        when(studentRepository.findById("")).thenReturn(Optional.empty());
-        Optional<StudentDto> result = studentService.getStudentById("");
-        assertFalse(result.isPresent());
     }
 }

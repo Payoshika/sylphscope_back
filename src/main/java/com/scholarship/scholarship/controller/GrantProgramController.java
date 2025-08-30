@@ -257,10 +257,6 @@ public class GrantProgramController {
         return ResponseEntity.ok(result);
     }
 
-    // src/main/java/com/scholarship/scholarship/controller/GrantProgramController.java
-
-// src/main/java/com/scholarship/scholarship/controller/GrantProgramController.java
-
     @GetMapping("/{grantProgramId}/available-questions")
     public ResponseEntity<GrantProgramAvailableQuestionsDto> getQuestionsByGrantProgramId(@PathVariable String grantProgramId) {
         GrantProgramDto grantProgram = grantProgramService.getGrantProgramById(grantProgramId);

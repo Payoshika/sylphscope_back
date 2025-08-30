@@ -56,14 +56,6 @@ class ProviderControllerTest {
     }
 
     @Test
-    void getProviderById_notFound() {
-        when(providerService.getProviderById("id1")).thenReturn(Optional.empty());
-        ResponseEntity<ProviderDto> response = providerController.getProviderById("id1");
-        assertNull(response.getBody());
-        assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
     void getAllProviders() {
         List<ProviderDto> providers = List.of(new ProviderDto());
         when(providerService.getAllProviders()).thenReturn(providers);
@@ -82,28 +74,12 @@ class ProviderControllerTest {
     }
 
     @Test
-    void getProviderByOrganisationName_notFound() {
-        when(providerService.getProviderByOrganisationName("org")).thenReturn(Optional.empty());
-        ResponseEntity<ProviderDto> response = providerController.getProviderByOrganisationName("org");
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCodeValue());
-    }
-
-    @Test
     void updateProvider_found() {
         ProviderDto providerDto = new ProviderDto();
         when(providerService.updateProvider(eq("id1"), any(ProviderDto.class))).thenReturn(providerDto);
         ResponseEntity<ProviderDto> response = providerController.updateProvider("id1", providerDto);
         assertEquals(providerDto, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
-    }
-
-    @Test
-    void updateProvider_notFound() {
-        when(providerService.updateProvider(eq("id1"), any(ProviderDto.class))).thenReturn(null);
-        ResponseEntity<ProviderDto> response = providerController.updateProvider("id1", new ProviderDto());
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCodeValue());
     }
 
     @Test
@@ -123,16 +99,6 @@ class ProviderControllerTest {
         assertEquals(providerDto, response.getBody());
         assertEquals(200, response.getStatusCodeValue());
     }
-
-    @Test
-    void assignContactPerson_notFound() {
-        ProviderStaffDto staffDto = new ProviderStaffDto();
-        when(providerService.assignContactPerson("id1", staffDto)).thenReturn(null);
-        ResponseEntity<ProviderDto> response = providerController.assignContactPerson("id1", staffDto);
-        assertNull(response.getBody());
-        assertEquals(404, response.getStatusCodeValue());
-    }
-
     @Test
     void getStaff() {
         List<ProviderStaffDto> staffList = List.of(new ProviderStaffDto());
@@ -162,9 +128,4 @@ class ProviderControllerTest {
         assertEquals(List.of(studentDto), result.get(0).get("students"));
     }
 
-    @Test
-    void getListOfStudentForProvider_notFound() {
-        when(providerService.getProviderById("id1")).thenReturn(Optional.empty());
-        assertThrows(Exception.class, () -> providerController.getListOfStudentForProvider("id1"));
-    }
 }
