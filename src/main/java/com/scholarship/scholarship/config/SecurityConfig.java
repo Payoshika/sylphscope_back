@@ -61,7 +61,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository) throws Exception {
         http
-                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception
@@ -85,8 +84,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/eligibility-result/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/question-groups/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/question-groups/**").hasRole("PROVIDER")
-                        .requestMatchers(HttpMethod.GET, "/api/grant-programs/**").hasAnyRole("STUDENT", "PROVIDER")
-                        .requestMatchers("/api/grant-programs/**").hasRole("PROVIDER")
+//                        .requestMatchers(HttpMethod.GET, "/api/grant-programs/**").hasAnyRole("STUDENT", "PROVIDER")
+//                        .requestMatchers("/api/grant-programs/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/selection-criteria/**").hasAnyRole("STUDENT", "PROVIDER")
                         .requestMatchers("/api/selection-criteria/**").hasRole("PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/evaluation-of-answers/**").hasAnyRole("STUDENT", "PROVIDER")

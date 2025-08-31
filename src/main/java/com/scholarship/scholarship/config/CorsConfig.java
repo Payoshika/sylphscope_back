@@ -19,11 +19,8 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:8080");
         config.addAllowedOrigin("https://accounts.google.com");
         config.addAllowedOrigin("https://sylphscope-front.vercel.app");
-        config.addAllowedOrigin("https://sylphscope-backend-9xgdpkg8t-payoshikas-projects.vercel.app");
-
-        // Allow all methods
         config.addAllowedMethod("*");
-
+        config.addAllowedHeader("*");
         config.setAllowCredentials(true);
 
         source.registerCorsConfiguration("/**", config);
